@@ -32,10 +32,10 @@ float mousePositionY ;
 
 //ball and board attributes
 float radius = 5;
-float lBoard = 150;
+float lBoard = 50;
 
 //movement attributes
-PVector gravityForce = new PVector(0, 9.81, 0);
+PVector gravityForce = new PVector(0,0, 0);
 float gravityConstant = 0.3;
 Mover mover;
 
@@ -48,7 +48,7 @@ void setup()
 
 void draw() {
   //ambient settings
-  camera(width/2, -height/2, 400, 250, 250, 0, 0, 1, 0); 
+  camera(10, -10, 200, width/2, height/2, 0, 0, 1, 0); 
   directionalLight(50, 100, 125, 0, 1, 0); 
   ambientLight(102, 102, 102);
   background(200);
@@ -70,7 +70,6 @@ void draw() {
   gravityForce.z = sin(rotX) * gravityConstant;
   pushMatrix();
   mover.update();
-  mover.checkEdges();
   mover.display();
   popMatrix();
 }

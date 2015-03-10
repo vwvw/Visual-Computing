@@ -12,14 +12,16 @@ class Mover {
 
   }
   void update() { 
+
+    
     PVector friction = velocity.get(); 
     friction.mult(-1);
     friction.normalize(); 
     friction.mult(frictionMagnitude);
-    velocity.add(gravityForce);
     velocity.add(friction);
+    velocity.add(gravityForce);
     location.add(velocity);
-    //checkEdges();
+    checkEdges();
   }
 
   void display() {
