@@ -8,11 +8,13 @@ float prx = 0;
 float x ;
 float y ;
 float radius = 5;
+float lBoard = 50;
 Mover mover;
 void setup() 
 {
   size(500, 500, P3D); 
   noStroke();
+  mover = new Mover();
 }
 
 void draw() {
@@ -20,6 +22,12 @@ void draw() {
   directionalLight(50, 100, 125, 0, -1, 0); 
   ambientLight(102, 102, 102);
   background(200);
+  translate(width/2, height/2, 0);
+  ry = map(baba, 0, width, 0, PI); 
+  rotateZ(rx); 
+  rotateX(rz);
+  rotateY(ry);
+  box(lBoard, 10,lBoard);
   pushMatrix();
   mover.update();
   mover.checkEdges();
@@ -29,8 +37,6 @@ void draw() {
 
 void mouseDragged() 
 {
-
-
   rz = prz+map(mouseY - y, -height, height, -PI/4, PI/4); 
   rx = prx +map(mouseX - x, -width, width, -PI/4, PI/4);
 }
@@ -52,3 +58,4 @@ void keyPressed() {
     }
   }
 }
+
