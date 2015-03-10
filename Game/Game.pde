@@ -8,7 +8,7 @@ float prx = 0;
 float pry = 0;
 float x ;
 float y ;
-float radiux = 20;
+float radius = 4;
 void setup() 
 {
   size(500, 500, P3D); 
@@ -27,8 +27,9 @@ void draw() {
   rotateZ(rx);
   rotateX(rz);
   rotateY(ry);
-sphere(radiux);
-
+  translate(10,0,0);
+  sphere(radius);
+  
   box(50, 10, 50);
 }
 
