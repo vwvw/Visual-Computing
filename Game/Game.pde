@@ -3,6 +3,11 @@ float baba = 0;
 float rz = 0;
 float rx = 0;
 float ry = 0;
+float prz = 0;
+float prx = 0;
+float pry = 0;
+float x ;
+float y ;
 void setup() 
 {
   size(500, 500, P3D); noStroke();
@@ -30,10 +35,24 @@ box(50,10,50);
 
 void mouseDragged() 
 {
- rz = map(mouseY, 0, height, -PI/4, PI/4); 
- rx = map(mouseX, 0, width,-PI/4, PI/4); 
+ 
+  
+ rz = prz+map(mouseY - y, -height, height, -PI/4, PI/4); 
+ rx = prx +map(mouseX - x, -width, width,-PI/4, PI/4); 
 
 }
+void mousePressed()
+{
+   x = mouseX;
+   prx = rx;
+   prz = rz;
+  y = mouseY; 
+}
+//void mouseReleased()
+//{
+//   x = mouseX;
+//  y = mouseY; 
+//}
 
 void keyPressed() { if (key == CODED) {
 if (keyCode == LEFT) { baba -= 50;
