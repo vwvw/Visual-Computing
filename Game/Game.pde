@@ -48,11 +48,7 @@ void mousePressed()
   prz = rz;
   y = mouseY;
 }
-//void mouseReleased()
-//{
-//   x = mouseX;
-//  y = mouseY; 
-//}
+
 
 void keyPressed() { 
   if (key == CODED) {
