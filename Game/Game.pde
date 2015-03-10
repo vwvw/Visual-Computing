@@ -93,20 +93,10 @@ void mousePressed()
 //when the mouse is dragged we compare the distance mouvec
 void mouseDragged() 
 {
-  float temp =previousrotX+map(mouseY - mousePositionY, -height, height, -PI/6, PI/6); 
-  if (temp+maxrotX > PI/3) rotX =PI/3;
-  else {
-    rotX = temp;
-    maxrotX = maxrotX+rotX;
-  }
-
-
-  float temp2 = previousrotZ +map(mouseX - mousePositionX, -width, width, -PI/6, PI/6); 
-  if (temp2+maxrotZ > PI/3) rotZ =PI/3;
-  else {
-    rotZ = temp;
-    maxrotZ = maxrotZ+rotZ;
-  }
+  rotX =previousrotX+map(mouseY - mousePositionY, -height, height, -PI/4, PI/4); 
+  rotZ = previousrotZ +map(mouseX - mousePositionX, -width, width, -PI/4, PI/4);
+ if(rotX > PI/3) rotX = PI/3; 
+ if(rotZ > PI/3) rotZ = PI/3; 
 }
 
 
