@@ -5,32 +5,30 @@
 
 
 class Mover { 
-  PVector gravityForce = new PVector(0, 0,0);
+  
   PVector location ;
   PVector velocity;
-  float gravityConstant = 1;
-
+  
   float normalForce = 1;
   float mu = 0.01;
   float frictionMagnitude = normalForce * mu; 
- 
-
-
-
-
+  
   Mover() {
-    location = new PVector(0, 0,-10); 
+    location = new PVector(0, 0,10); 
     velocity = new PVector(0, 0,0);
 
   }
   void update() { 
-    location.add(velocity);
-    gravityForce.x = sin(rz) * gravityConstant;
-    gravityForce.z = sin(rx) * gravityConstant;
+    
+
     PVector friction = velocity.get(); 
     friction.mult(-1);
     friction.normalize(); 
     friction.mult(frictionMagnitude);
+    velocity.x = gravityForce.x;
+    velocity.y = gravityForce.z;
+    location.add(velocity);
+    checkEdges();
   }
 
   void display() {
@@ -38,19 +36,23 @@ class Mover {
     sphere(radius);
   }
   void checkEdges() {
-    if (location.x > width) {
-      location.x = 0;
-    } else if (location.x < 0) { 
-      location.x = width;
+    if (location.x > lBoard/2) {
+      location.x = lBoard/2;
+      velocity.x = -velocity.x ;
+    } else if (location.x < -lBoard/2) { 
+      location.x = -lBoard/2;
+      velocity.x = -velocity.x ;
     }
-    if (location.y > height) { 
-      location.y = 0;
-    } else if (location.y < 0) {
-      location.y = height;
+    if (location.y > lBoard/2) { 
+      location.y = lBoard/2;
+      velocity.y = -velocity.y ;
+    } else if (location.y < -lBoard/2) {
+      location.y = -lBoard/2;
+      velocity.y = -velocity.y ;
     }
-    if(location.z > -10)
+    if(location.z > 10)
     {
-      location.z = -10;
+      location.z = 10;
     }
   }
 }
