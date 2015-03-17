@@ -48,7 +48,7 @@ void setup()
 
 void draw() {
   //ambient settings
-  camera(10, -10, 200, width/2, height/2, 0, 0, 1, 0); 
+  camera(125, -1, 125, width/2, height/2, 0, 0, 1, 0); 
   directionalLight(50, 100, 125, 0, 1, 0); 
   ambientLight(102, 102, 102);
   background(200);
