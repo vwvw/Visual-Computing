@@ -30,6 +30,9 @@ float previousrotZ ;
 float mousePositionX;
 float mousePositionY ;
 
+//baord movementscaler
+float movementScale = 1;
+
 //ball and board attributes
 float radius = 5;
 float lBoard = 250;
@@ -87,8 +90,8 @@ void mousePressed()
 //when the mouse is dragged we compare the distance mouvec
 void mouseDragged() 
 {
-  rotX =previousrotX+map(mouseY - mousePositionY, -height, height, -PI/3, PI/3); 
-  rotZ = previousrotZ +map(mouseX - mousePositionX, -width, width, -PI/3, PI/3);
+  rotX = (float) (previousrotX + Math.pow(1.1, movementScale) * map(mouseY - mousePositionY, -height, height, -PI/3, PI/3)); 
+  rotZ = (float) (previousrotZ + Math.pow(1.1, movementScale) * map(mouseX - mousePositionX, -width, width, -PI/3, PI/3));
   if (rotX > PI/3) rotX = PI/3; 
   if (rotX < -PI/3) rotX = -PI/3; 
   if (rotZ > PI/3) rotZ = PI/3; 
@@ -98,7 +101,7 @@ void mouseDragged()
 
 
 //vertical rotation with arrow keys
-void keyPressed() { 
+/*void keyPressed() { 
   if (key == CODED) {
     if (keyCode == LEFT) { 
       rotVertical -= 50;
@@ -106,5 +109,9 @@ void keyPressed() {
       rotVertical += 50;
     }
   }
+}*/
+
+void mouseWheel(MouseEvent event) {
+    movementScale -= event.getCount();
 }
 
