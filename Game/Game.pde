@@ -47,8 +47,6 @@ Mover mover;
 float cylinderBaseSize = 15; 
 float cylinderHeight = 50; 
 int cylinderResolution = 40;
-float cylinderCenterX = 0;
-float cylinderCenterY = 0;
 PShape openCylinder = new PShape();
 PShape cylinderTop = new PShape();
 PShape cylinderBottom = new PShape();
@@ -65,70 +63,33 @@ void setup()
   size(500, 500, P3D); 
   noStroke();
   mover = new Mover();
-
-  //Open cylinder
-  float angle;
-  float[] x = new float[cylinderResolution + 1]; 
-  float[] y = new float[cylinderResolution + 1];
-  
-  //get the x and y position on a circle for all the sides
-  for (int i = 0; i < x.length; i++) {
-    angle = (TWO_PI / cylinderResolution) * i; 
-    x[i] = sin(angle) * cylinderBaseSize + cylinderCenterX; 
-    y[i] = cos(angle) * cylinderBaseSize + cylinderCenterY;
-  }
-  
-  openCylinder = createShape();
-  openCylinder.beginShape(QUAD_STRIP);
-  //draw the border of the cylinder
-  for (int i = 0; i < x.length; i++) { 
-    openCylinder.vertex(x[i], y[i], 0); 
-    openCylinder.vertex(x[i], y[i], cylinderHeight);
-  }
-  openCylinder.endShape();
-  
-  cylinderTop = createShape();
-  cylinderTop.beginShape(TRIANGLE_FAN);
-  cylinderTop.vertex(cylinderCenterX,cylinderCenterY, cylinderHeight);
-  for (int i = 0; i < x.length; i++) {
-    cylinderTop.vertex(x[i]+cylinderCenterX, y[i]+cylinderCenterY, cylinderHeight);
-  }
-  cylinderTop.vertex(x[0], y[0], cylinderHeight);
-  cylinderTop.endShape();  
-  
-  cylinderBottom = createShape();
-  cylinderBottom.beginShape(TRIANGLE_FAN);
-  cylinderBottom.vertex(cylinderCenterX,cylinderCenterY, 0);
-  for (int i = 0; i < x.length; i++) {
-    cylinderTop.vertex(x[i]+cylinderCenterX, y[i]+cylinderCenterY, 0);
-  }
-  cylinderBottom.vertex(x[0], y[0], 0);
-  cylinderBottom.endShape();
 }
 
 void draw() {
   //ambient settings
-  camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
+
   directionalLight(50, 100, 125, 0, 1, 0); 
   ambientLight(102, 102, 102);
   background(200);
 
-  //we move the coodinates to have the board in the center of the window
-  translate(width/2, height/2, 0);
+
 
 
   if (mode) // place cylinder
   {
+    camera(0, -400, 0, 0, 0, 0, 1, 1, 0);
     box(lBoard, 10, lBoard);
     rotateX(PI/2);
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
-      cylinderCenterX = arrayCylinder.get(i).x;
-      cylinderCenterY = arrayCylinder.get(i).y;
-      shape(openCylinder);
-      shape(cylinderTop);
+      float positionX = arrayCylinder.get(i).x-250;
+      float positionY = arrayCylinder.get(i).y-250;
+      cylinderQqch(positionX, positionY);
     }
   } else {
+    camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
+    //we move the coodinates to have the board in the center of the window
+    translate(width/2, height/2, 0);
     //we map the vertical rotation induced by the arrow keys to a rotation in the z axis
     rotYNeg = map(rotVertical, 0, width, 0, PI); 
     rotateY(-rotYNeg);
@@ -145,11 +106,9 @@ void draw() {
     rotateX(PI/2);
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
-      cylinderCenterX = arrayCylinder.get(i).x;
-      cylinderCenterY = arrayCylinder.get(i).y;
-      shape(openCylinder);
-      shape(cylinderTop);
-      shape(cylinderBottom);
+      float positionX = arrayCylinder.get(i).x-250;
+      float positionY = arrayCylinder.get(i).y-250;
+      cylinderQqch(positionX, positionY);
     }
     popMatrix();
 
@@ -213,3 +172,48 @@ void keyPressed() {
 void mouseWheel(MouseEvent event) {
   movementScale -= event.getCount();
 }
+
+void cylinderQqch(float positionX, float positionY)
+{
+  print(positionX, positionY);
+  //Open cylinder
+  float angle;
+  float[] x = new float[cylinderResolution + 1]; 
+  float[] y = new float[cylinderResolution + 1];
+
+  //get the x and y position on a circle for all the sides
+  for (int i = 0; i < x.length; i++) {
+    angle = (TWO_PI / cylinderResolution) * i; 
+    x[i] = sin(angle) * cylinderBaseSize + positionX; 
+    y[i] = cos(angle) * cylinderBaseSize + positionY;
+  }
+  openCylinder = createShape();
+  openCylinder.beginShape(QUAD_STRIP);
+  //draw the border of the cylinder
+  for (int i = 0; i < x.length; i++) { 
+    openCylinder.vertex(x[i], y[i], 0); 
+    openCylinder.vertex(x[i], y[i], cylinderHeight);
+  }
+  openCylinder.endShape();
+  cylinderTop = createShape();
+  cylinderTop.beginShape(TRIANGLE_FAN);
+  cylinderTop.vertex(positionX, positionY, cylinderHeight);
+  for (int i = 0; i < x.length; i++) {
+    cylinderTop.vertex(x[i]+positionX, y[i]+positionY, cylinderHeight);
+  }
+  cylinderTop.vertex(x[0], y[0], cylinderHeight);
+  cylinderTop.endShape();  
+  cylinderBottom = createShape();
+  cylinderBottom.beginShape(TRIANGLE_FAN);
+  cylinderBottom.vertex(positionX, positionY, 0);
+  for (int i = 0; i < x.length; i++) {
+    cylinderBottom.vertex(x[i]+positionX, y[i]+positionY, 0);
+  }
+  cylinderBottom.vertex(x[0], y[0], 0);
+  cylinderBottom.endShape();
+  shape(openCylinder);
+  shape(cylinderTop);
+  shape(cylinderBottom);
+  box(10);
+}
+
