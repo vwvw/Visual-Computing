@@ -62,17 +62,18 @@ void setup()
   noStroke();
   mover = new Mover();
 
-
   //Open cylinder
   float angle;
   float[] x = new float[cylinderResolution + 1]; 
   float[] y = new float[cylinderResolution + 1];
+  
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
     angle = (TWO_PI / cylinderResolution) * i; 
     x[i] = sin(angle) * cylinderBaseSize + cylinderCenterX; 
     y[i] = cos(angle) * cylinderBaseSize + cylinderCenterY;
   }
+  
   openCylinder = createShape();
   openCylinder.beginShape(QUAD_STRIP);
   //draw the border of the cylinder
@@ -81,19 +82,23 @@ void setup()
     openCylinder.vertex(x[i], y[i], cylinderHeight);
   }
   openCylinder.endShape();
+  
   cylinderTop = createShape();
-  cylinderTop.beginShape(QUAD_STRIP);
+  cylinderTop.beginShape(TRIANGLE_FAN);
+  cylinderTop.vertex(cylinderCenterX,cylinderCenterY, cylinderHeight);
   for (int i = 0; i < x.length; i++) {
-    cylinderTop.vertex(x[i], y[i], cylinderHeight);
-    cylinderTop.vertex(cylinderCenterX, cylinderCenterY, cylinderHeight);
+    cylinderTop.vertex(x[i]+cylinderCenterX, y[i]+cylinderCenterY, cylinderHeight);
   }
+  cylinderTop.vertex(x[0], y[0], cylinderHeight);
   cylinderTop.endShape();  
+  
   cylinderBottom = createShape();
-  cylinderBottom.beginShape(QUAD_STRIP);
+  cylinderBottom.beginShape(TRIANGLE_FAN);
+  cylinderBottom.vertex(cylinderCenterX,cylinderCenterY, 0);
   for (int i = 0; i < x.length; i++) {
-    cylinderBottom.vertex(x[i], y[i], 0);
-    cylinderBottom.vertex(cylinderCenterX, cylinderCenterY, cylinderHeight);
+    cylinderTop.vertex(x[i]+cylinderCenterX, y[i]+cylinderCenterY, 0);
   }
+  cylinderBottom.vertex(x[0], y[0], 0);
   cylinderBottom.endShape();
 }
 
@@ -106,6 +111,7 @@ void draw() {
 
   //we move the coodinates to have the board in the center of the window
   translate(width/2, height/2, 0);
+
 
   if (mode) // place cylinder
   {
@@ -142,6 +148,7 @@ void draw() {
       shape(cylinderBottom);
     }
     popMatrix();
+
 
     pushMatrix();
     mover.update();
