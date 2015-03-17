@@ -44,12 +44,16 @@ Mover mover;
 
 
 // cylinder declaration 
-float cylinderBaseSize = 50; 
+float cylinderBaseSize = 15; 
 float cylinderHeight = 50; 
 int cylinderResolution = 40;
+float cylinderCenterX = 0;
+float cylinderCenterY = 0;
 PShape openCylinder = new PShape();
 PShape cylinderTop = new PShape();
 PShape cylinderBottom = new PShape();
+boolean mode = false; //true = place cylinder
+ArrayList<PVector> arrayCylinder = new ArrayList<PVector>();
 
 
 void setup() 
@@ -66,8 +70,8 @@ void setup()
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
     angle = (TWO_PI / cylinderResolution) * i; 
-    x[i] = sin(angle) * cylinderBaseSize; 
-    y[i] = cos(angle) * cylinderBaseSize;
+    x[i] = sin(angle) * cylinderBaseSize + cylinderCenterX; 
+    y[i] = cos(angle) * cylinderBaseSize + cylinderCenterY;
   }
   openCylinder = createShape();
   openCylinder.beginShape(QUAD_STRIP);
@@ -81,14 +85,14 @@ void setup()
   cylinderTop.beginShape(QUAD_STRIP);
   for (int i = 0; i < x.length; i++) {
     cylinderTop.vertex(x[i], y[i], cylinderHeight);
-    cylinderTop.vertex(0, 0, cylinderHeight);
+    cylinderTop.vertex(cylinderCenterX, cylinderCenterY, cylinderHeight);
   }
   cylinderTop.endShape();  
   cylinderBottom = createShape();
   cylinderBottom.beginShape(QUAD_STRIP);
   for (int i = 0; i < x.length; i++) {
-    cylinderBottom.vertex(x[i], y[i], cylinderHeight);
-    cylinderBottom.vertex(0, 0, cylinderHeight);
+    cylinderBottom.vertex(x[i], y[i], 0);
+    cylinderBottom.vertex(cylinderCenterX, cylinderCenterY, cylinderHeight);
   }
   cylinderBottom.endShape();
 }
@@ -103,37 +107,62 @@ void draw() {
   //we move the coodinates to have the board in the center of the window
   translate(width/2, height/2, 0);
 
-  //we map the vertical rotation induced by the arrow keys to a rotation in the z axis
-  rotYNeg = map(rotVertical, 0, width, 0, PI); 
-  rotateY(-rotYNeg);
-  rotateZ(rotZ); 
-  rotateX(-rotX);
+  if (mode) // place cylinder
+  {
+    box(lBoard, 10, lBoard);
+    rotateX(PI/2);
+    for (int i = 0; i< arrayCylinder.size (); i++)
+    {
+      cylinderCenterX = arrayCylinder.get(i).x;
+      cylinderCenterY = arrayCylinder.get(i).y;
+      shape(openCylinder);
+      shape(cylinderTop);
+    }
+  } else {
+    //we map the vertical rotation induced by the arrow keys to a rotation in the z axis
+    rotYNeg = map(rotVertical, 0, width, 0, PI); 
+    rotateY(-rotYNeg);
+    rotateZ(rotZ); 
+    rotateX(-rotX);
 
 
-  box(lBoard, 10, lBoard);
-  gravityForce.x = sin(rotZ) * gravityConstant;
-  gravityForce.z = sin(rotX) * gravityConstant;
-  // draw cylinder
-  pushMatrix();
-  rotateX(PI/2);
-  shape(openCylinder);
-  shape(cylinderTop);
-  popMatrix();
+    box(lBoard, 10, lBoard);
+    gravityForce.x = sin(rotZ) * gravityConstant;
+    gravityForce.z = sin(rotX) * gravityConstant;
 
+    //draw cylinder
+    pushMatrix();
+    rotateX(PI/2);
+    for (int i = 0; i< arrayCylinder.size (); i++)
+    {
+      cylinderCenterX = arrayCylinder.get(i).x;
+      cylinderCenterY = arrayCylinder.get(i).y;
+      shape(openCylinder);
+      shape(cylinderTop);
+      shape(cylinderBottom);
+    }
+    popMatrix();
 
-  pushMatrix();
-  mover.update();
-  mover.display();
-  popMatrix();
+    pushMatrix();
+    mover.update();
+    mover.display();
+    popMatrix();
+  }
 }
 
 //we save the mouse position, and archive the rotation level
 void mousePressed()
 {
-  mousePositionX = mouseX;
-  mousePositionY = mouseY;
-  previousrotZ = rotZ;
-  previousrotX = rotX;
+  if (mode)
+  {
+    PVector cyl = new PVector(mouseX, mouseY);
+    arrayCylinder.add(cyl);
+  } else {
+    mousePositionX = mouseX;
+    mousePositionY = mouseY;
+    previousrotZ = rotZ;
+    previousrotX = rotX;
+  }
 }
 
 
@@ -152,16 +181,24 @@ void mouseDragged()
 
 //vertical rotation with arrow keys
 /*void keyPressed() { 
+ if (key == CODED) {
+ if (keyCode == LEFT) { 
+ rotVertical -= 50;
+ } else if (keyCode == RIGHT) {
+ rotVertical += 50;
+ }
+ }
+ }*/
+
+void keyPressed() { 
   if (key == CODED) {
-    if (keyCode == LEFT) { 
-      rotVertical -= 50;
-    } else if (keyCode == RIGHT) {
-      rotVertical += 50;
+    if (keyCode == SHIFT) { 
+      mode = !mode;
     }
   }
-}*/
-
-void mouseWheel(MouseEvent event) {
-    movementScale -= event.getCount();
 }
 
+
+void mouseWheel(MouseEvent event) {
+  movementScale -= event.getCount();
+}
