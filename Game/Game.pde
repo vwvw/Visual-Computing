@@ -58,17 +58,18 @@ void setup()
   noStroke();
   mover = new Mover();
 
-
   //Open cylinder
   float angle;
   float[] x = new float[cylinderResolution + 1]; 
   float[] y = new float[cylinderResolution + 1];
+  
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
     angle = (TWO_PI / cylinderResolution) * i; 
     x[i] = sin(angle) * cylinderBaseSize; 
     y[i] = cos(angle) * cylinderBaseSize;
   }
+  
   openCylinder = createShape();
   openCylinder.beginShape(QUAD_STRIP);
   //draw the border of the cylinder
@@ -77,19 +78,23 @@ void setup()
     openCylinder.vertex(x[i], y[i], cylinderHeight);
   }
   openCylinder.endShape();
+  
   cylinderTop = createShape();
-  cylinderTop.beginShape(QUAD_STRIP);
+  cylinderTop.beginShape(TRIANGLE_FAN);
+  cylinderTop.vertex(0,0, cylinderHeight);
   for (int i = 0; i < x.length; i++) {
     cylinderTop.vertex(x[i], y[i], cylinderHeight);
-    cylinderTop.vertex(0, 0, cylinderHeight);
   }
+  cylinderTop.vertex(x[0], y[0], cylinderHeight);
   cylinderTop.endShape();  
+  
   cylinderBottom = createShape();
-  cylinderBottom.beginShape(QUAD_STRIP);
+  cylinderBottom.beginShape(TRIANGLE_FAN);
+  cylinderBottom.vertex(0,0, 0);
   for (int i = 0; i < x.length; i++) {
-    cylinderBottom.vertex(x[i], y[i], cylinderHeight);
-    cylinderBottom.vertex(0, 0, cylinderHeight);
+    cylinderBottom.vertex(x[i], y[i], 0);
   }
+  cylinderBottom.vertex(x[0], y[0], 0);
   cylinderBottom.endShape();
 }
 
@@ -118,6 +123,7 @@ void draw() {
   rotateX(PI/2);
   shape(openCylinder);
   shape(cylinderTop);
+  shape(cylinderBottom);
   popMatrix();
 
 
