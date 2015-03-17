@@ -35,15 +35,44 @@ float radius = 5;
 float lBoard = 250;
 
 //movement attributes
-PVector gravityForce = new PVector(0,0, 0);
+PVector gravityForce = new PVector(0, 0, 0);
 float gravityConstant = 0.3;
 Mover mover;
+
+
+// cylinder declaration 
+float cylinderBaseSize = 50; 
+float cylinderHeight = 50; 
+int cylinderResolution = 40;
+PShape openCylinder = new PShape();
+
 
 void setup() 
 {
   size(500, 500, P3D); 
   noStroke();
   mover = new Mover();
+
+
+  // cylinder
+
+    float angle;
+  float[] x = new float[cylinderResolution + 1]; 
+  float[] y = new float[cylinderResolution + 1];
+  //get the x and y position on a circle for all the sides
+  for (int i = 0; i < x.length; i++) {
+    angle = (TWO_PI / cylinderResolution) * i; 
+    x[i] = sin(angle) * cylinderBaseSize; 
+    y[i] = cos(angle) * cylinderBaseSize;
+  }
+  openCylinder = createShape();
+  openCylinder.beginShape(QUAD_STRIP);
+  //draw the border of the cylinder
+  for (int i = 0; i < x.length; i++) { 
+    openCylinder.vertex(x[i], y[i], 0); 
+    openCylinder.vertex(x[i], y[i], cylinderHeight);
+  }
+  openCylinder.endShape();
 }
 
 void draw() {
@@ -53,8 +82,11 @@ void draw() {
   ambientLight(102, 102, 102);
   background(200);
 
+
+
   //we move the coodinates to have the board in the center of the window
   translate(width/2, height/2, 0);
+
 
 
 
@@ -68,6 +100,11 @@ void draw() {
   box(lBoard, 10, lBoard);
   gravityForce.x = sin(rotZ) * gravityConstant;
   gravityForce.z = sin(rotX) * gravityConstant;
+  // draw cylinder
+  pushMatrix();
+  rotateX(PI/2);
+  shape(openCylinder);
+  popMatrix();
   pushMatrix();
   mover.update();
   mover.display();
