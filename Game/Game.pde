@@ -56,6 +56,10 @@ boolean mode = false; //true = place cylinder
 ArrayList<PVector> arrayCylinder = new ArrayList<PVector>();
 
 
+// Cylinder array
+ArrayList<PVector> Cylinders = new ArrayList<PVector>(); 
+
+
 void setup() 
 {
   size(500, 500, P3D); 
