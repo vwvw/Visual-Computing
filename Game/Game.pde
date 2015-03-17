@@ -32,7 +32,7 @@ float mousePositionY ;
 
 //ball and board attributes
 float radius = 5;
-float lBoard = 50;
+float lBoard = 250;
 
 //movement attributes
 PVector gravityForce = new PVector(0,0, 0);
@@ -48,7 +48,7 @@ void setup()
 
 void draw() {
   //ambient settings
-  camera(125, -1, 125, width/2, height/2, 0, 0, 1, 0); 
+  camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
   directionalLight(50, 100, 125, 0, 1, 0); 
   ambientLight(102, 102, 102);
   background(200);

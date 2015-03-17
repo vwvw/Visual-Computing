@@ -3,7 +3,7 @@ class Mover {
   PVector location ;
   PVector velocity;
   float normalForce = 1;
-  float mu = 0.01;
+  float mu = 0.05;
   float frictionMagnitude = normalForce * mu; 
   
   Mover() {
