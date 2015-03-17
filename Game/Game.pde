@@ -48,6 +48,8 @@ float cylinderBaseSize = 50;
 float cylinderHeight = 50; 
 int cylinderResolution = 40;
 PShape openCylinder = new PShape();
+PShape cylinderTop = new PShape();
+PShape cylinderBottom = new PShape();
 
 
 void setup() 
@@ -57,9 +59,8 @@ void setup()
   mover = new Mover();
 
 
-  // cylinder
-
-    float angle;
+  //Open cylinder
+  float angle;
   float[] x = new float[cylinderResolution + 1]; 
   float[] y = new float[cylinderResolution + 1];
   //get the x and y position on a circle for all the sides
@@ -76,6 +77,20 @@ void setup()
     openCylinder.vertex(x[i], y[i], cylinderHeight);
   }
   openCylinder.endShape();
+  cylinderTop = createShape();
+  cylinderTop.beginShape(QUAD_STRIP);
+  for (int i = 0; i < x.length; i++) {
+    cylinderTop.vertex(x[i], y[i], cylinderHeight);
+    cylinderTop.vertex(0, 0, cylinderHeight);
+  }
+  cylinderTop.endShape();  
+  cylinderBottom = createShape();
+  cylinderBottom.beginShape(QUAD_STRIP);
+  for (int i = 0; i < x.length; i++) {
+    cylinderBottom.vertex(x[i], y[i], cylinderHeight);
+    cylinderBottom.vertex(0, 0, cylinderHeight);
+  }
+  cylinderBottom.endShape();
 }
 
 void draw() {
@@ -85,13 +100,8 @@ void draw() {
   ambientLight(102, 102, 102);
   background(200);
 
-
-
   //we move the coodinates to have the board in the center of the window
   translate(width/2, height/2, 0);
-
-
-
 
   //we map the vertical rotation induced by the arrow keys to a rotation in the z axis
   rotYNeg = map(rotVertical, 0, width, 0, PI); 
@@ -107,7 +117,10 @@ void draw() {
   pushMatrix();
   rotateX(PI/2);
   shape(openCylinder);
+  shape(cylinderTop);
   popMatrix();
+
+
   pushMatrix();
   mover.update();
   mover.display();
