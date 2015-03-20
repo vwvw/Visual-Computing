@@ -21,7 +21,6 @@ float rotVertical = 0;
 //rotation that we do
 float rotX = 0;
 float rotZ = 0;
-float rotYNeg = 0;
 
 //the rotation that was already done
 float previousrotX ;
@@ -46,7 +45,7 @@ Mover mover;
 // cylinder declaration 
 float cylinderBaseSize = 15; 
 float cylinderHeight = 50; 
-int cylinderResolution = 40;
+int cylinderResolution = 30;
 PShape openCylinder = new PShape();
 PShape cylinderTop = new PShape();
 PShape cylinderBottom = new PShape();
@@ -79,20 +78,21 @@ void draw() {
   {
     camera(0, -400, 0, 0, 0, 0, 1, 1, 0);
     box(lBoard, 10, lBoard);
+    pushMatrix();
     rotateX(PI/2);
+    rotateZ(-PI/2);
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
       float positionX = arrayCylinder.get(i).x-250;
       float positionY = arrayCylinder.get(i).y-250;
       cylinderQqch(positionX, positionY);
     }
+    popMatrix();
   } else {
     camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
     //we move the coodinates to have the board in the center of the window
     translate(width/2, height/2, 0);
-    //we map the vertical rotation induced by the arrow keys to a rotation in the z axis
-    rotYNeg = map(rotVertical, 0, width, 0, PI); 
-    rotateY(-rotYNeg);
+    
     rotateZ(rotZ); 
     rotateX(-rotX);
 
@@ -175,7 +175,6 @@ void mouseWheel(MouseEvent event) {
 
 void cylinderQqch(float positionX, float positionY)
 {
-  print(positionX, positionY);
   //Open cylinder
   float angle;
   float[] x = new float[cylinderResolution + 1]; 
@@ -184,8 +183,8 @@ void cylinderQqch(float positionX, float positionY)
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
     angle = (TWO_PI / cylinderResolution) * i; 
-    x[i] = sin(angle) * cylinderBaseSize + positionX; 
-    y[i] = cos(angle) * cylinderBaseSize + positionY;
+    x[i] = sin(angle) * cylinderBaseSize + positionX ; 
+    y[i] = cos(angle) * cylinderBaseSize + positionY ;
   }
   openCylinder = createShape();
   openCylinder.beginShape(QUAD_STRIP);
@@ -214,6 +213,6 @@ void cylinderQqch(float positionX, float positionY)
   shape(openCylinder);
   shape(cylinderTop);
   shape(cylinderBottom);
-  box(10);
+  //box(10);
 }
 
