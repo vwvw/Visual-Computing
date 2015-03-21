@@ -34,7 +34,7 @@ float movementScale = 1;
 //ball and board attributes
 float radius = 10;
 float lBoard = 250;
-float wBoard = 1;
+float wBoard = 100;
 
 //movement attributes
 PVector gravityForce = new PVector(0, 0, 0);
