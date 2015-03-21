@@ -84,7 +84,15 @@ void draw() {
     rotateX(PI/2);
     rotateZ(-PI/2);
     
-    if((mouseX>140 && mouseX < 360) && (mouseY > 140 && mouseY < 360)) // trouve les valeurs exactes...
+    float BoardOnScreenSize = screenX(lBoard/2,0,lBoard/2) -  screenX(-lBoard/2,0,lBoard/2);
+    
+    float minX = width - BoardOnScreenSize;
+    float maxX = width + BoardOnScreenSize;
+    float maxY = height + BoardOnScreenSize;
+    float minY = height - BoardOnScreenSize; 
+    
+    
+    if((mouseX >= minX/2 && mouseX <= maxX/2) && (mouseY > minY/2 && mouseY < maxY/2)) // trouve les valeurs exactes...
     {
    
       cylinderQqch(mouseX-lBoard,mouseY-lBoard); 
