@@ -46,6 +46,7 @@ Mover mover;
 float cylinderBaseSize = 15; 
 float cylinderHeight = 50; 
 int cylinderResolution = 30;
+PShape completeCylinder = new PShape();
 PShape openCylinder = new PShape();
 PShape cylinderTop = new PShape();
 PShape cylinderBottom = new PShape();
@@ -62,6 +63,7 @@ void setup()
   size(500, 500, P3D); 
   noStroke();
   mover = new Mover();
+  cylinderQqch(); // create the shape once and for all...
 }
 
 void draw() {
@@ -82,22 +84,29 @@ void draw() {
     pushMatrix();
     rotateX(PI/2);
     rotateZ(-PI/2);
+   
     
     if((mouseX>140 && mouseX < 360) && (mouseY > 140 && mouseY < 360)) // trouve les valeurs exactes...
     {
    
-      cylinderQqch(mouseX-lBoard,mouseY-lBoard); 
+      //cylinderQqch(mouseX-lBoard,mouseY-lBoard); 
+        shape(completeCylinder);
     
     
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
-      float positionX = arrayCylinder.get(i).x-lBoard;
-      float positionY = arrayCylinder.get(i).y-lBoard;
-      cylinderQqch(positionX, positionY);
+        pushMatrix();
+     
+//      float positionX = arrayCylinder.get(i).x-lBoard;
+//      float positionY = arrayCylinder.get(i).y-lBoard;
+        translate(arrayCylinder.get(i).x,0,arrayCylinder.get(i).y);
+      //cylinderQqch(positionX, positionY);
+        shape(completeCylinder);
+       popMatrix();
     } 
     }
     
-    popMatrix();
+   
   } else {
     camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
     //we move the coodinates to have the board in the center of the window
@@ -112,21 +121,27 @@ void draw() {
     gravityForce.z = sin(rotX) * gravityConstant;
 
     //draw cylinder
-    pushMatrix();
-    rotateX(PI/2);
+    
+   
     
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
+      pushMatrix();
+      translate(arrayCylinder.get(i).x,0,arrayCylinder.get(i).y);
+      rotateX(PI/2);
       float positionX = arrayCylinder.get(i).x-lBoard;
       float positionY = arrayCylinder.get(i).y-lBoard;
-      cylinderQqch(positionX, positionY);
+      //cylinderQqch(positionX, positionY);
+      shape(completeCylinder);
+      popMatrix();
     }
-    popMatrix();
+    
 
 
     pushMatrix();
     mover.update();
     mover.display();
+    popMatrix();
     popMatrix();
   }
 }
@@ -136,6 +151,7 @@ void mousePressed()
 {
   if (mode)
   {
+    // checker si la balle est pas dans le cylindre...
     PVector cyl = new PVector(mouseX, mouseY);
     arrayCylinder.add(cyl);
   } else {
@@ -184,18 +200,20 @@ void mouseWheel(MouseEvent event) {
   movementScale -= event.getCount();
 }
 
-void cylinderQqch(float positionX, float positionY)
+void cylinderQqch()
 {
   //Open cylinder
   float angle;
   float[] x = new float[cylinderResolution + 1]; 
   float[] y = new float[cylinderResolution + 1];
 
+  
+
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
     angle = (TWO_PI / cylinderResolution) * i; 
-    x[i] = sin(angle) * cylinderBaseSize + positionX ; 
-    y[i] = cos(angle) * cylinderBaseSize + positionY ;
+    x[i] = sin(angle) * cylinderBaseSize ; 
+    y[i] = cos(angle) * cylinderBaseSize ;
   }
   openCylinder = createShape();
   openCylinder.beginShape(QUAD_STRIP);
@@ -205,25 +223,34 @@ void cylinderQqch(float positionX, float positionY)
     openCylinder.vertex(x[i], y[i], cylinderHeight);
   }
   openCylinder.endShape();
+  
   cylinderTop = createShape();
   cylinderTop.beginShape(TRIANGLE_FAN);
-  cylinderTop.vertex(positionX, positionY, cylinderHeight);
+  cylinderTop.vertex(0, 0, cylinderHeight);
   for (int i = 0; i < x.length; i++) {
     cylinderTop.vertex(x[i], y[i], cylinderHeight);
   }
   cylinderTop.vertex(x[0], y[0], cylinderHeight);
   cylinderTop.endShape();  
-//  cylinderBottom = createShape();
-//  cylinderBottom.beginShape(TRIANGLE_FAN);
-//  cylinderBottom.vertex(positionX, positionY, 0);
-//  for (int i = 0; i < x.length; i++) {
-//    cylinderBottom.vertex(x[i], y[i], 0);
-//  }
-//  cylinderBottom.vertex(x[0], y[0], 0);
-//  cylinderBottom.endShape();
-  shape(openCylinder);
-  shape(cylinderTop);
-//  shape(cylinderBottom);
-  //box(10);
+  
+  cylinderBottom = createShape();
+  cylinderBottom.beginShape(TRIANGLE_FAN);
+  cylinderBottom.vertex(0, 0, 0);
+  for (int i = 0; i < x.length; i++) {
+    cylinderBottom.vertex(x[i], y[i], 0);
+  }
+  //cylinderBottom.vertex(x[0], y[0], 0); => why
+  cylinderBottom.endShape();
+  
+  //shape(openCylinder);
+  //shape(cylinderTop);
+  //shape(cylinderBottom);
+  //box(10); ???
+    
+  
+   completeCylinder = createShape(GROUP);
+   completeCylinder.addChild(openCylinder);
+   completeCylinder.addChild(cylinderTop); 
+   completeCylinder.addChild(cylinderBottom);
 }
 
