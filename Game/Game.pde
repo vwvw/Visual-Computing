@@ -145,7 +145,7 @@ void mousePressed()
     rotateZ(-PI/2);
 
 
-    if (placeCylinder()) // trouve les valeurs exactes...
+    if (placeCylinder()) 
     {
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize));
       arrayCylinder.add(cyl);
