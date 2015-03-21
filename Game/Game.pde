@@ -202,17 +202,17 @@ void cylinderQqch(float positionX, float positionY)
   }
   cylinderTop.vertex(x[0], y[0], cylinderHeight);
   cylinderTop.endShape();  
-  cylinderBottom = createShape();
-  cylinderBottom.beginShape(TRIANGLE_FAN);
-  cylinderBottom.vertex(positionX, positionY, 0);
-  for (int i = 0; i < x.length; i++) {
-    cylinderBottom.vertex(x[i], y[i], 0);
-  }
-  cylinderBottom.vertex(x[0], y[0], 0);
-  cylinderBottom.endShape();
+//  cylinderBottom = createShape();
+//  cylinderBottom.beginShape(TRIANGLE_FAN);
+//  cylinderBottom.vertex(positionX, positionY, 0);
+//  for (int i = 0; i < x.length; i++) {
+//    cylinderBottom.vertex(x[i], y[i], 0);
+//  }
+//  cylinderBottom.vertex(x[0], y[0], 0);
+//  cylinderBottom.endShape();
   shape(openCylinder);
   shape(cylinderTop);
-  shape(cylinderBottom);
+//  shape(cylinderBottom);
   //box(10);
 }
 
