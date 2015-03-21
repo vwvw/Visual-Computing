@@ -100,13 +100,15 @@ void draw() {
 //      float positionX = arrayCylinder.get(i).x-lBoard;
 //      float positionY = arrayCylinder.get(i).y-lBoard;
         translate(arrayCylinder.get(i).x,0,arrayCylinder.get(i).y);
+         rotateX(PI/2);
+         println("mode1"+i);
       //cylinderQqch(positionX, positionY);
         shape(completeCylinder);
        popMatrix();
     } 
-    }
     
-   
+    }
+   popMatrix();
   } else {
     camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
     //we move the coodinates to have the board in the center of the window
@@ -128,9 +130,9 @@ void draw() {
     {
       pushMatrix();
       translate(arrayCylinder.get(i).x,0,arrayCylinder.get(i).y);
-      rotateX(PI/2);
-      float positionX = arrayCylinder.get(i).x-lBoard;
-      float positionY = arrayCylinder.get(i).y-lBoard;
+      println("mode2"+i);
+//      float positionX = arrayCylinder.get(i).x-lBoard;
+//      float positionY = arrayCylinder.get(i).y-lBoard;
       //cylinderQqch(positionX, positionY);
       shape(completeCylinder);
       popMatrix();
@@ -141,7 +143,6 @@ void draw() {
     pushMatrix();
     mover.update();
     mover.display();
-    popMatrix();
     popMatrix();
   }
 }
@@ -252,5 +253,8 @@ void cylinderQqch()
    completeCylinder.addChild(openCylinder);
    completeCylinder.addChild(cylinderTop); 
    completeCylinder.addChild(cylinderBottom);
+   
+   shape
+   
 }
 
