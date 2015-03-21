@@ -7,13 +7,11 @@ class Mover {
   float frictionMagnitude = normalForce * mu; 
   
   Mover() {
-    location = new PVector(0, -10,0); 
+    location = new PVector(0, -wBoard/2 - radius,0); 
     velocity = new PVector(0, 0,0);
-
   }
-  void update() { 
-
-    
+  
+  void update() {    
     PVector friction = velocity.get(); 
     friction.mult(-1);
     friction.normalize(); 
@@ -28,6 +26,7 @@ class Mover {
     translate(location.x, location.y, location.z);
     sphere(radius);
   }
+  
   void checkEdges() {
     if (location.x > lBoard/2) {
       location.x = lBoard/2;

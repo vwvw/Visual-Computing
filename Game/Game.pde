@@ -15,8 +15,8 @@
 
 
 
-
-float rotVertical = 0;
+//used for arrowKeys turn
+//float rotVertical = 0;
 
 //rotation that we do
 float rotX = 0;
@@ -24,18 +24,19 @@ float rotZ = 0;
 
 //the rotation that was already done
 float previousrotX ;
-float previousrotZ ;
+float previousrotZ;
+
 //the position of the mouse at the begining of the movement
 float mousePositionX;
-float mousePositionY ;
+float mousePositionY;
 
 //baord movementscaler
 float movementScale = 1;
 
 //ball and board attributes
-float radius = 5;
+float radius = 30;
 float lBoard = 250;
-float wBoard = 10;
+float wBoard = 100;
 
 //movement attributes
 PVector gravityForce = new PVector(0, 0, 0);
@@ -44,8 +45,8 @@ Mover mover;
 
 
 // cylinder declaration 
-float cylinderBaseSize = 15; 
-float cylinderHeight = 50; 
+float cylinderBaseSize = 10; 
+float cylinderHeight = 25; 
 int cylinderResolution = 30;
 PShape completeCylinder = new PShape();
 PShape openCylinder = new PShape();
@@ -68,10 +69,6 @@ void draw() {
   background(200);
 
 
-
-
-
-
   if (shiftMode) // place cylinder
   {
     camera(0, -400, 0, 0, 0, 0, 1, 1, 0); // on se place droit en dessus
@@ -92,13 +89,15 @@ void draw() {
     if((mouseX >= minX/2 && mouseX <= maxX/2) && (mouseY > minY/2 && mouseY < maxY/2)) // trouve les valeurs exactes...
     {
       cylinderAdd(mouseX-lBoard,mouseY-lBoard); 
+    }
+    
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
       float positionX = arrayCylinder.get(i).x-lBoard;
       float positionY = arrayCylinder.get(i).y-lBoard;
       cylinderAdd(positionX, positionY);
     } 
-    }
+    
     popMatrix();
     pushMatrix();
     rotateY(PI/2);
@@ -117,7 +116,6 @@ void draw() {
     gravityForce.x = sin(rotZ) * gravityConstant;
     gravityForce.z = sin(rotX) * gravityConstant;
     
-    translate(0, -wBoard/2, 0);
 
     //draw cylinder
     pushMatrix();
@@ -188,6 +186,7 @@ void keyPressed() {
     }
   }
 }
+
 void keyReleased() { 
   if (key == CODED) {
     if (keyCode == SHIFT) { 
@@ -197,7 +196,7 @@ void keyReleased() {
 }
 
 
-//to augment rotating speed
+//Change the rotation speed of the baord
 void mouseWheel(MouseEvent event) {
   movementScale -= event.getCount();
   if(movementScale >= 20){
@@ -231,29 +230,29 @@ void cylinderAdd(float positionX, float positionY)
   openCylinder.beginShape(QUAD_STRIP);
   //draw the border of the cylinder
   for (int i = 0; i < x.length; i++) { 
-    openCylinder.vertex(x[i], y[i], 0); 
-    openCylinder.vertex(x[i], y[i], cylinderHeight);
+    openCylinder.vertex(x[i], y[i], wBoard/2); 
+    openCylinder.vertex(x[i], y[i], cylinderHeight + wBoard/2);
   }
   openCylinder.endShape();
   
   //top
   cylinderTop = createShape();
   cylinderTop.beginShape(TRIANGLE_FAN);
-  cylinderTop.vertex(positionX, positionY, cylinderHeight);
+  cylinderTop.vertex(positionX, positionY, cylinderHeight + wBoard/2);
   for (int i = 0; i < x.length; i++) {
-    cylinderTop.vertex(x[i], y[i], cylinderHeight);
+    cylinderTop.vertex(x[i], y[i], cylinderHeight + wBoard/2);
   }
-  cylinderTop.vertex(x[0], y[0], cylinderHeight);
+  cylinderTop.vertex(x[0], y[0], cylinderHeight + wBoard/2);
   cylinderTop.endShape();  
   
   //bottom
   cylinderBottom = createShape();
   cylinderBottom.beginShape(TRIANGLE_FAN);
-  cylinderBottom.vertex(positionX, positionY, 0);
+  cylinderBottom.vertex(positionX, positionY, wBoard/2);
   for (int i = 0; i < x.length; i++) {
-    cylinderBottom.vertex(x[i], y[i], 0);
+    cylinderBottom.vertex(x[i], y[i], wBoard/2);
   }
-  cylinderBottom.vertex(x[0], y[0], 0);
+  cylinderBottom.vertex(x[0], y[0], wBoard/2);
   cylinderBottom.endShape();
   
   completeCylinder.addChild(openCylinder);
@@ -261,6 +260,5 @@ void cylinderAdd(float positionX, float positionY)
   completeCylinder.addChild(cylinderBottom);
   
   shape(completeCylinder);
-
 }
 
