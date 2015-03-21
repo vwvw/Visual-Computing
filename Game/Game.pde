@@ -32,7 +32,7 @@ float mousePositionY;
 float movementScale = 1;
 
 //ball and board attributes
-float radius = 30;
+float radius = 10;
 float lBoard = 250;
 float wBoard = 1;
 
@@ -58,6 +58,8 @@ float minXBoundariesCylinder;
 float maxXBoundariesCylinder;
 float minYBoundariesCylinder;
 float maxYBoundariesCylinder;
+
+
 
 void setup() 
 {
@@ -143,7 +145,6 @@ void mousePressed()
     pushMatrix();
     rotateX(PI/2);
     rotateZ(-PI/2);
-
 
     if (placeCylinder()) 
     {

@@ -54,23 +54,25 @@ class Mover {
   {
     for(int i = 0; i < arrayCylinder.size(); i++)
     {
-      println(arrayCylinder.size());
        PVector bal = new PVector(location.x, 0, location.z); 
-       PVector cyl = new PVector(-arrayCylinder.get(i).x,0, -arrayCylinder.get(i).z); 
+       PVector cyl = new PVector(arrayCylinder.get(i).x - lBoard/2, 0, arrayCylinder.get(i).y- lBoard/2); 
        
        PVector diff = bal.get();
        diff.sub(cyl);
        
        if(diff.mag() < cylinderBaseSize +radius)// la balle a touche ! 
        {
+         print("shit");
          diff.normalize();
-         PVector t = diff.get(); 
-         t.mult(velocity.dot(diff));
-         t.mult(2); 
-         velocity.sub(t);
-        println("boonjour");
-        location.add(t); 
-        //arrayCylinder.remove(i);
+         PVector v2;
+         PVector n = diff.get(); 
+         PVector v1Copy1 = velocity.get();
+         PVector v1Copy2 = velocity.get();
+         float dot = v1Copy1.dot(n);
+         n.mult(2);
+         n.mult(dot);
+         v1Copy2.sub(n);
+         velocity = v1Copy2.get();
        }  
    }
   }
