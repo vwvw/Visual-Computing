@@ -13,8 +13,6 @@
 // z
 
 
-
-
 //used for arrowKeys turn
 //float rotVertical = 0;
 
@@ -77,27 +75,41 @@ void draw() {
     pushMatrix();
     rotateX(PI/2);
     rotateZ(-PI/2);
-    
-    float BoardOnScreenSize = screenX(lBoard/2,0,lBoard/2) -  screenX(-lBoard/2,0,lBoard/2);
-    
-    float minX = width - BoardOnScreenSize;
-    float maxX = width + BoardOnScreenSize;
-    float maxY = height + BoardOnScreenSize;
-    float minY = height - BoardOnScreenSize; 
-    
-    
-    if((mouseX >= minX/2 && mouseX <= maxX/2) && (mouseY > minY/2 && mouseY < maxY/2)) // trouve les valeurs exactes...
+    println(screenX(0, 0, 0));
+    println(screenY(0, 0, 0));
+    println(screenZ(0, 0, 0));
+    println("---");
+    println(screenX(lBoard/2,  lBoard/2,0));
+    println(screenY(lBoard/2,  lBoard/2,0));
+    println(screenZ(lBoard/2,  lBoard/2,0));
+    println("---");
+    println(screenX(-lBoard/2,-lBoard/2,0));
+    println(screenY(-lBoard/2,-lBoard/2,0));
+    println(screenZ(-lBoard/2,-lBoard/2,0));
+    println("---");
+    println(mouseX);
+    println(mouseY);
+    println("---");
+    float BoardOnScreenSize = screenX(lBoard/2,  lBoard/2,0) -  screenX(-lBoard/2,-lBoard/2,0);
+
+    float minX =  screenX(-lBoard/2,-lBoard/2,0);
+    float maxX = minX + BoardOnScreenSize;
+    float minY = screenY(-lBoard/2,-lBoard/2,0);
+    float maxY = minY + BoardOnScreenSize; 
+
+
+    if ((mouseX >= minX && mouseX <= maxX) && (mouseY > minY && mouseY < maxY)) // trouve les valeurs exactes...
     {
-      cylinderAdd(mouseX-lBoard,mouseY-lBoard); 
+      cylinderAdd(mouseX-lBoard, mouseY-lBoard);
     }
-    
+
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
       float positionX = arrayCylinder.get(i).x-lBoard;
       float positionY = arrayCylinder.get(i).y-lBoard;
       cylinderAdd(positionX, positionY);
     } 
-    
+
     popMatrix();
     pushMatrix();
     rotateY(PI/2);
@@ -107,7 +119,7 @@ void draw() {
     camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
     //we move the coodinates to have the board in the center of the window
     translate(width/2, height/2, 0);
-    
+
     rotateZ(rotZ); 
     rotateX(-rotX);
 
@@ -115,12 +127,12 @@ void draw() {
     box(lBoard, wBoard, lBoard);
     gravityForce.x = sin(rotZ) * gravityConstant;
     gravityForce.z = sin(rotX) * gravityConstant;
-    
+
 
     //draw cylinder
     pushMatrix();
     rotateX(PI/2);
-    
+
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
       float positionX = arrayCylinder.get(i).x-lBoard;
@@ -199,20 +211,20 @@ void keyReleased() {
 //Change the rotation speed of the baord
 void mouseWheel(MouseEvent event) {
   movementScale -= event.getCount();
-  if(movementScale >= 20){
+  if (movementScale >= 20) {
     movementScale = 20;
   }
-  if(movementScale <= -8){
+  if (movementScale <= -8) {
     movementScale = -8;
   }
 }
 
 void cylinderAdd(float positionX, float positionY)
 {
-  
+
   // position x : centre du cylindre par rapport à la plaque. 
   // position y : centre du cylindre par rapport à la plaque. 
-  
+
   float angle;
   float[] x = new float[cylinderResolution + 1]; 
   float[] y = new float[cylinderResolution + 1];
@@ -224,7 +236,7 @@ void cylinderAdd(float positionX, float positionY)
     x[i] = sin(angle) * cylinderBaseSize + positionX ; 
     y[i] = cos(angle) * cylinderBaseSize + positionY ;
   }
-  
+
   //corps
   openCylinder = createShape();
   openCylinder.beginShape(QUAD_STRIP);
@@ -234,7 +246,7 @@ void cylinderAdd(float positionX, float positionY)
     openCylinder.vertex(x[i], y[i], cylinderHeight + wBoard/2);
   }
   openCylinder.endShape();
-  
+
   //top
   cylinderTop = createShape();
   cylinderTop.beginShape(TRIANGLE_FAN);
@@ -244,7 +256,7 @@ void cylinderAdd(float positionX, float positionY)
   }
   cylinderTop.vertex(x[0], y[0], cylinderHeight + wBoard/2);
   cylinderTop.endShape();  
-  
+
   //bottom
   cylinderBottom = createShape();
   cylinderBottom.beginShape(TRIANGLE_FAN);
@@ -254,11 +266,11 @@ void cylinderAdd(float positionX, float positionY)
   }
   cylinderBottom.vertex(x[0], y[0], wBoard/2);
   cylinderBottom.endShape();
-  
+
   completeCylinder.addChild(openCylinder);
   completeCylinder.addChild(cylinderTop);
   completeCylinder.addChild(cylinderBottom);
-  
+
   shape(completeCylinder);
 }
 

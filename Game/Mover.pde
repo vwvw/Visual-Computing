@@ -10,7 +10,7 @@ class Mover {
     location = new PVector(0, -wBoard/2 - radius,0); 
     velocity = new PVector(0, 0,0);
   }
-  
+
   void update() {    
     PVector friction = velocity.get(); 
     friction.mult(-1);
@@ -45,6 +45,13 @@ class Mover {
     if(location.y > -10)
     {
       location.y = -10;
+    }
+  }
+  void checkCylinder(){
+    for (int i = 0; i< arrayCylinder.size (); i++)
+    {
+     
+      
     }
   }
 }
