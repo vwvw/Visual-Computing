@@ -46,6 +46,7 @@ Mover mover;
 float cylinderBaseSize = 15; 
 float cylinderHeight = 50; 
 int cylinderResolution = 30;
+PShape completeCylinder = new PShape();
 PShape openCylinder = new PShape();
 PShape cylinderTop = new PShape();
 PShape cylinderBottom = new PShape();
@@ -190,6 +191,7 @@ void cylinderQqch(float positionX, float positionY)
   float angle;
   float[] x = new float[cylinderResolution + 1]; 
   float[] y = new float[cylinderResolution + 1];
+  completeCylinder = createShape(GROUP);
 
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
@@ -213,17 +215,24 @@ void cylinderQqch(float positionX, float positionY)
   }
   cylinderTop.vertex(x[0], y[0], cylinderHeight);
   cylinderTop.endShape();  
-//  cylinderBottom = createShape();
-//  cylinderBottom.beginShape(TRIANGLE_FAN);
-//  cylinderBottom.vertex(positionX, positionY, 0);
-//  for (int i = 0; i < x.length; i++) {
-//    cylinderBottom.vertex(x[i], y[i], 0);
-//  }
-//  cylinderBottom.vertex(x[0], y[0], 0);
-//  cylinderBottom.endShape();
-  shape(openCylinder);
-  shape(cylinderTop);
+  cylinderBottom = createShape();
+  cylinderBottom.beginShape(TRIANGLE_FAN);
+  cylinderBottom.vertex(positionX, positionY, 0);
+  for (int i = 0; i < x.length; i++) {
+    cylinderBottom.vertex(x[i], y[i], 0);
+  }
+  cylinderBottom.vertex(x[0], y[0], 0);
+  cylinderBottom.endShape();
+//  shape(openCylinder);
+//  shape(cylinderTop);
 //  shape(cylinderBottom);
+  
+  completeCylinder.addChild(openCylinder);
+  completeCylinder.addChild(cylinderTop);
+  completeCylinder.addChild(cylinderBottom);
+  
+  shape(completeCylinder);
+
   //box(10);
 }
 
