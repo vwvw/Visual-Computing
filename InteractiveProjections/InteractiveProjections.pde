@@ -191,8 +191,8 @@ void draw() {
   My3DPoint origin = new My3DPoint(0, 0, 0);
   My3DBox input3DBox = new My3DBox(origin, 100, 150, 300);
   //rotated around x
-  float[][] transform1 = rotateXMatrix(rotX); 
-  input3DBox = transformBox(input3DBox, transform1); 
+  float[][] transform1X = rotateXMatrix(rotX); 
+  input3DBox = transformBox(input3DBox, transform1X); 
   float[][] transform1Y = rotateYMatrix(rotY); 
   input3DBox = transformBox(input3DBox, transform1Y); 
   
@@ -211,14 +211,20 @@ void mouseDragged()
 {
    if(mouseY > yI)
    {
-     sc *= 1.1*sc; 
+     sc *= 1.02; 
    }  
    else
    {
-    sc *= 0.9*sc;  
+    sc *= 0.98;  
    }
    xI = mouseX; 
    yI = mouseY; 
+}
+
+void mousePressed() 
+{
+  xI = mouseX; 
+  yI = mouseY;
 }
 
 void keyPressed()
@@ -239,7 +245,7 @@ void keyPressed()
     }
     else if(keyCode == RIGHT)
     {
-      rotY -= 0.05;       
+      rotY += 0.05;       
     }
   }
 }
