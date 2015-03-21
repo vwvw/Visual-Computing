@@ -3,7 +3,7 @@ class Mover {
   PVector location ;
   PVector velocity;
   float normalForce = 1;
-  float mu = 0.05;
+  float mu = 0.03;
   float frictionMagnitude = normalForce * mu; 
   
   Mover() {
@@ -55,14 +55,13 @@ class Mover {
     for(int i = 0; i < arrayCylinder.size(); i++)
     {
        PVector bal = new PVector(location.x, 0, location.z); 
-       PVector cyl = new PVector(arrayCylinder.get(i).x - lBoard/2, 0, arrayCylinder.get(i).y- lBoard/2); 
+       PVector cyl = new PVector(arrayCylinder.get(i).x - lBoard/2, 0, arrayCylinder.get(i).y - lBoard/2); 
        
        PVector diff = bal.get();
        diff.sub(cyl);
        
        if(diff.mag() < cylinderBaseSize +radius)// la balle a touche ! 
        {
-         print("shit");
          diff.normalize();
          PVector v2;
          PVector n = diff.get(); 
