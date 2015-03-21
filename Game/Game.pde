@@ -76,17 +76,27 @@ void draw() {
 
   if (mode) // place cylinder
   {
+    
     camera(0, -400, 0, 0, 0, 0, 1, 1, 0);
     box(lBoard, 10, lBoard);
     pushMatrix();
     rotateX(PI/2);
     rotateZ(-PI/2);
+    
+    if((mouseX>140 && mouseX < 360) && (mouseY > 140 && mouseY < 360)) // trouve les valeurs exactes...
+    {
+   
+      cylinderQqch(mouseX-lBoard,mouseY-lBoard); 
+    
+    
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
-      float positionX = arrayCylinder.get(i).x-250;
-      float positionY = arrayCylinder.get(i).y-250;
+      float positionX = arrayCylinder.get(i).x-lBoard;
+      float positionY = arrayCylinder.get(i).y-lBoard;
       cylinderQqch(positionX, positionY);
+    } 
     }
+    
     popMatrix();
   } else {
     camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
@@ -104,10 +114,11 @@ void draw() {
     //draw cylinder
     pushMatrix();
     rotateX(PI/2);
+    
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
-      float positionX = arrayCylinder.get(i).x-250;
-      float positionY = arrayCylinder.get(i).y-250;
+      float positionX = arrayCylinder.get(i).x-lBoard;
+      float positionY = arrayCylinder.get(i).y-lBoard;
       cylinderQqch(positionX, positionY);
     }
     popMatrix();
