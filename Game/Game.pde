@@ -35,6 +35,7 @@ float movementScale = 1;
 //ball and board attributes
 float radius = 5;
 float lBoard = 250;
+float wBoard = 10;
 
 //movement attributes
 PVector gravityForce = new PVector(0, 0, 0);
@@ -69,10 +70,13 @@ void draw() {
 
 
 
+
+
   if (shiftMode) // place cylinder
   {
     camera(0, -400, 0, 0, 0, 0, 1, 1, 0); // on se place droit en dessus
-    box(lBoard, 10, lBoard);
+    box(lBoard, wBoard, lBoard);
+    translate(0, -wBoard/2, 0);
     pushMatrix();
     rotateX(PI/2);
     rotateZ(-PI/2);
@@ -109,9 +113,11 @@ void draw() {
     rotateX(-rotX);
 
 
-    box(lBoard, 10, lBoard);
+    box(lBoard, wBoard, lBoard);
     gravityForce.x = sin(rotZ) * gravityConstant;
     gravityForce.z = sin(rotX) * gravityConstant;
+    
+    translate(0, -wBoard/2, 0);
 
     //draw cylinder
     pushMatrix();
@@ -194,6 +200,12 @@ void keyReleased() {
 //to augment rotating speed
 void mouseWheel(MouseEvent event) {
   movementScale -= event.getCount();
+  if(movementScale >= 20){
+    movementScale = 20;
+  }
+  if(movementScale <= -8){
+    movementScale = -8;
+  }
 }
 
 void cylinderAdd(float positionX, float positionY)
