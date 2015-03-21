@@ -34,7 +34,7 @@ float movementScale = 1;
 //ball and board attributes
 float radius = 30;
 float lBoard = 250;
-float wBoard = 100;
+float wBoard = 1;
 
 //movement attributes
 PVector gravityForce = new PVector(0, 0, 0);
@@ -71,42 +71,28 @@ void draw() {
   {
     camera(0, -400, 0, 0, 0, 0, 1, 1, 0); // on se place droit en dessus
     box(lBoard, wBoard, lBoard);
-    translate(0, -wBoard/2, 0);
+
     pushMatrix();
+    translate(0, -wBoard/2, 0);
     rotateX(PI/2);
     rotateZ(-PI/2);
-    println(screenX(0, 0, 0));
-    println(screenY(0, 0, 0));
-    println(screenZ(0, 0, 0));
-    println("---");
-    println(screenX(lBoard/2,  lBoard/2,0));
-    println(screenY(lBoard/2,  lBoard/2,0));
-    println(screenZ(lBoard/2,  lBoard/2,0));
-    println("---");
-    println(screenX(-lBoard/2,-lBoard/2,0));
-    println(screenY(-lBoard/2,-lBoard/2,0));
-    println(screenZ(-lBoard/2,-lBoard/2,0));
-    println("---");
-    println(mouseX);
-    println(mouseY);
-    println("---");
-    float BoardOnScreenSize = screenX(lBoard/2,  lBoard/2,0) -  screenX(-lBoard/2,-lBoard/2,0);
+    float BoardOnScreenSize = screenX(lBoard/2, lBoard/2, 0) -  screenX(-lBoard/2, -lBoard/2, 0);
 
-    float minX =  screenX(-lBoard/2,-lBoard/2,0);
+    float minX =  screenX(-lBoard/2, -lBoard/2, 0);
     float maxX = minX + BoardOnScreenSize;
-    float minY = screenY(-lBoard/2,-lBoard/2,0);
+    float minY = screenY(-lBoard/2, -lBoard/2, 0);
     float maxY = minY + BoardOnScreenSize; 
 
 
     if ((mouseX >= minX && mouseX <= maxX) && (mouseY > minY && mouseY < maxY)) // trouve les valeurs exactes...
     {
-      cylinderAdd(mouseX-lBoard, mouseY-lBoard);
+      cylinderAdd(map(mouseX, minX, maxX, 0, lBoard)-lBoard/2, map(mouseY, minY, maxY, 0, lBoard)-lBoard/2);
     }
 
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
-      float positionX = arrayCylinder.get(i).x-lBoard;
-      float positionY = arrayCylinder.get(i).y-lBoard;
+      float positionX = arrayCylinder.get(i).x-lBoard/2;
+      float positionY = arrayCylinder.get(i).y-lBoard/2;
       cylinderAdd(positionX, positionY);
     } 
 
@@ -135,8 +121,8 @@ void draw() {
 
     for (int i = 0; i< arrayCylinder.size (); i++)
     {
-      float positionX = arrayCylinder.get(i).x-lBoard;
-      float positionY = arrayCylinder.get(i).y-lBoard;
+      float positionX = arrayCylinder.get(i).x-lBoard/2;
+      float positionY = arrayCylinder.get(i).y-lBoard/2;
       cylinderAdd(positionX, positionY);
     }
     popMatrix();
@@ -154,8 +140,25 @@ void mousePressed()
 {
   if (shiftMode)
   {
-    PVector cyl = new PVector(mouseX, mouseY);
-    arrayCylinder.add(cyl);
+    translate(0, -wBoard/2, 0);
+    pushMatrix();
+    rotateX(PI/2);
+    rotateZ(-PI/2);
+    float BoardOnScreenSize = screenX(lBoard/2, lBoard/2, 0) -  screenX(-lBoard/2, -lBoard/2, 0);
+
+    float minX =  screenX(-lBoard/2, -lBoard/2, 0);
+    float maxX = minX + BoardOnScreenSize;
+    float minY = screenY(-lBoard/2, -lBoard/2, 0);
+    float maxY = minY + BoardOnScreenSize; 
+
+
+    if ((mouseX >= minX && mouseX <= maxX) && (mouseY > minY && mouseY < maxY)) // trouve les valeurs exactes...
+    {
+      PVector cyl = new PVector(map(mouseX, minX, maxX, 0, lBoard), map(mouseY, minY, maxY, 0, lBoard));
+      arrayCylinder.add(cyl);
+    }
+    popMatrix();
+    
   } else {
     mousePositionX = mouseX;
     mousePositionY = mouseY;
