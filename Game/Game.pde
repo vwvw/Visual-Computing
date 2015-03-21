@@ -149,7 +149,6 @@ void mousePressed()
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize), 
       map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize));
 
-
       arrayCylinder.add(cyl);
     }
     popMatrix();
@@ -178,17 +177,16 @@ void mouseDragged()
 boolean placeCylinder()
 {
 
-  float BoardOnScreenSize = screenX(lBoard/2- cylinderBaseSize, lBoard/2- cylinderBaseSize, -wBoard/2-cylinderHeight) -  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, -wBoard/2-cylinderHeight);
-  minXBoundariesCylinder =  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, -wBoard/2-cylinderHeight) ;
+  float BoardOnScreenSize = screenX(lBoard/2- cylinderBaseSize, lBoard/2- cylinderBaseSize, wBoard/2+cylinderHeight) -  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight);
+  minXBoundariesCylinder =  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight) ;
   maxXBoundariesCylinder = minXBoundariesCylinder + BoardOnScreenSize;
-  println(maxXBoundariesCylinder);
+  println(minXBoundariesCylinder);
   println(mouseX);
   println("---");
 
-minYBoundariesCylinder = screenY(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, -wBoard/2-cylinderHeight);
+  minYBoundariesCylinder = screenY(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight);
   maxYBoundariesCylinder = minYBoundariesCylinder + BoardOnScreenSize; 
   return (mouseX >= minXBoundariesCylinder && mouseX <= maxXBoundariesCylinder) && (mouseY > minYBoundariesCylinder && mouseY < maxYBoundariesCylinder);
-
 }
 
 
