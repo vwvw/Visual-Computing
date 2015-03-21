@@ -1,3 +1,4 @@
+
 //processing convention
 
 //    -y
@@ -52,6 +53,12 @@ PShape cylinderBottom = new PShape();
 boolean shiftMode = false; //true = place cylinder
 ArrayList<PVector> arrayCylinder = new ArrayList<PVector>();
 
+
+float minXBoundariesCylinder;
+float maxXBoundariesCylinder;
+float minYBoundariesCylinder;
+float maxYBoundariesCylinder;
+
 void setup() 
 {
   size(500, 500, P3D); 
@@ -75,17 +82,10 @@ void draw() {
     translate(0, -wBoard/2, 0);
     rotateX(PI/2);
     rotateZ(-PI/2);
-    float BoardOnScreenSize = screenX(lBoard/2, lBoard/2, 0) -  screenX(-lBoard/2, -lBoard/2, 0);
 
-    float minX =  screenX(-lBoard/2, -lBoard/2, 0);
-    float maxX = minX + BoardOnScreenSize;
-    float minY = screenY(-lBoard/2, -lBoard/2, 0);
-    float maxY = minY + BoardOnScreenSize; 
-
-
-    if ((mouseX >= minX && mouseX <= maxX) && (mouseY > minY && mouseY < maxY)) // trouve les valeurs exactes...
+    if (placeCylinder()) // trouve les valeurs exactes...
     {
-      cylinderAdd(map(mouseX, minX, maxX, 0, lBoard)-lBoard/2, map(mouseY, minY, maxY, 0, lBoard)-lBoard/2);
+      cylinderAdd(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize)-lBoard/2, map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize)-lBoard/2);
     }
 
     for (int i = 0; i< arrayCylinder.size (); i++)
@@ -143,17 +143,11 @@ void mousePressed()
     pushMatrix();
     rotateX(PI/2);
     rotateZ(-PI/2);
-    float BoardOnScreenSize = screenX(lBoard/2, lBoard/2, 0) -  screenX(-lBoard/2, -lBoard/2, 0);
-
-    float minX =  screenX(-lBoard/2, -lBoard/2, 0);
-    float maxX = minX + BoardOnScreenSize;
-    float minY = screenY(-lBoard/2, -lBoard/2, 0);
-    float maxY = minY + BoardOnScreenSize; 
 
 
-    if ((mouseX >= minX && mouseX <= maxX) && (mouseY > minY && mouseY < maxY)) // trouve les valeurs exactes...
+    if (placeCylinder()) // trouve les valeurs exactes...
     {
-      PVector cyl = new PVector(map(mouseX, minX, maxX, 0, lBoard), map(mouseY, minY, maxY, 0, lBoard));
+      PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize));
       arrayCylinder.add(cyl);
     }
     popMatrix();
@@ -177,6 +171,17 @@ void mouseDragged()
   if (rotZ < -PI/3) rotZ = -PI/3;
 }
 
+
+
+boolean placeCylinder()
+{
+    float BoardOnScreenSize = screenX(lBoard/2, lBoard/2, 0) -  screenX(-lBoard/2, -lBoard/2, 0);
+     minXBoundariesCylinder =  screenX(-lBoard/2, -lBoard/2, 0) + cylinderBaseSize;
+     maxXBoundariesCylinder = minXBoundariesCylinder + BoardOnScreenSize-cylinderBaseSize;
+     minYBoundariesCylinder = screenY(-lBoard/2, -lBoard/2, 0)+ cylinderBaseSize;
+     maxYBoundariesCylinder = minYBoundariesCylinder + BoardOnScreenSize- cylinderBaseSize; 
+    return (mouseX >= minXBoundariesCylinder && mouseX <= maxXBoundariesCylinder) && (mouseY > minYBoundariesCylinder && mouseY < maxYBoundariesCylinder);
+}
 
 
 //vertical rotation with arrow keys
@@ -274,3 +279,4 @@ void cylinderAdd(float positionX, float positionY)
 
   shape(completeCylinder);
 }
+
