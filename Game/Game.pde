@@ -73,14 +73,22 @@ void draw() {
   background(200);
 
 
-
-
   if (mode) // place cylinder
   {
     
     camera(0, -400, 0, 0, 0, 0, 1, 1, 0);
     box(lBoard, 10, lBoard);
+<<<<<<< Updated upstream
     pushMatrix();
+=======
+    println(mouseX);
+    println(mouseY);
+    println(screenX(0, 10, 0));
+    println(screenY(0, 10, 0));
+    println(screenX(lBoard, 10, lBoard));
+    println(screenY(lBoard, 10, lBoard));
+
+>>>>>>> Stashed changes
     rotateX(PI/2);
     rotateZ(-PI/2);
     
@@ -137,8 +145,21 @@ void mousePressed()
 {
   if (mode)
   {
-    PVector cyl = new PVector(mouseX, mouseY);
-    arrayCylinder.add(cyl);
+//    println(mouseX);
+//    println(mouseY);
+//    println(screenX(0, 10, 0));
+//    println(screenX(lBoard, 10, lBoard));
+//    println(screenY(0, 10, 0));
+//    println(screenY(lBoard, 10, lBoard));
+    if (mouseX>screenX(0, 10, 0) && mouseX<screenX(lBoard, 10, 0))
+    {
+      if (mouseY>screenY(0, 10, 0) && mouseY<screenY(0, 10, lBoard)) 
+      {
+        PVector cyl = new PVector(mouseX, mouseY);
+        arrayCylinder.add(cyl);
+        println("k");
+      }
+    }
   } else {
     mousePositionX = mouseX;
     mousePositionY = mouseY;
