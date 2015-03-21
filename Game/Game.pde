@@ -1,4 +1,3 @@
-
 //processing convention
 
 //    -y
@@ -76,7 +75,6 @@ void draw() {
     translate(0, -wBoard/2, 0);
     rotateX(PI/2);
     rotateZ(-PI/2);
-<<<<<<< Updated upstream
     float BoardOnScreenSize = screenX(lBoard/2, lBoard/2, 0) -  screenX(-lBoard/2, -lBoard/2, 0);
 
     float minX =  screenX(-lBoard/2, -lBoard/2, 0);
@@ -86,19 +84,6 @@ void draw() {
 
 
     if ((mouseX >= minX && mouseX <= maxX) && (mouseY > minY && mouseY < maxY)) // trouve les valeurs exactes...
-=======
-    
-    float BoardOnScreenSize = screenX(lBoard/2,0,lBoard/2) -  screenX(-lBoard/2,0,lBoard/2);
-    
-    float minX = width - BoardOnScreenSize;
-    float maxX = width + BoardOnScreenSize;
-    float maxY = height + BoardOnScreenSize;
-    float minY = height - BoardOnScreenSize;
-    
-    
-    
-    if((mouseX >= minX/2 && mouseX <= maxX/2) && (mouseY >= minY/2 && mouseY <= maxY/2)) // trouve les valeurs exactes...
->>>>>>> Stashed changes
     {
       cylinderAdd(map(mouseX, minX, maxX, 0, lBoard)-lBoard/2, map(mouseY, minY, maxY, 0, lBoard)-lBoard/2);
     }
@@ -172,7 +157,6 @@ void mousePressed()
       arrayCylinder.add(cyl);
     }
     popMatrix();
-    
   } else {
     mousePositionX = mouseX;
     mousePositionY = mouseY;
@@ -290,4 +274,3 @@ void cylinderAdd(float positionX, float positionY)
 
   shape(completeCylinder);
 }
-
