@@ -1,51 +1,51 @@
 class Mover { 
 
-  PVector location ;
-  PVector velocity;
+  PVector ballLocation ;
+  PVector ballVelocity;
   float normalForce = 1;
   float mu = 0.03;
   float frictionMagnitude = normalForce * mu; 
   float bounceCoefficient = 0.7;
 
   Mover() {
-    location = new PVector(0, -wBoard/2 - radius, 0); 
-    velocity = new PVector(0, 0, 0);
+    ballLocation = new PVector(0, -wBoard/2 - ballRadius, 0); 
+    ballVelocity = new PVector(0, 0, 0);
   }
 
   void update() {    
     gravityForce.x = sin(rotZ) * gravityConstant;
     gravityForce.z = sin(rotX) * gravityConstant;
-    PVector friction = velocity.get(); 
+    PVector friction = ballVelocity.get(); 
     friction.mult(-1);
     friction.normalize(); 
     friction.mult(frictionMagnitude);
-    velocity.add(friction);
-    velocity.add(gravityForce);
-    location.add(velocity);
+    ballVelocity.add(friction);
+    ballVelocity.add(gravityForce);
+    ballLocation.add(ballVelocity);
     checkEdges();
     checkCylinderCollision();
   }
 
   void display() {
-    translate(location.x, location.y, location.z);
-    sphere(radius);
+    translate(ballLocation.x, ballLocation.y, ballLocation.z);
+    sphere(ballRadius);
   }
 
   void checkEdges() {
-    if (location.x > lBoard/2) {
-      location.x = lBoard/2;
-      velocity.x = -velocity.x * bounceCoefficient;
-    } else if (location.x < -lBoard/2) { 
-      location.x = -lBoard/2;
-      velocity.x = -velocity.x * bounceCoefficient;
+    if (ballLocation.x > lBoard/2) {
+      ballLocation.x = lBoard/2;
+      ballVelocity.x = -ballVelocity.x * bounceCoefficient;
+    } else if (ballLocation.x < -lBoard/2) { 
+      ballLocation.x = -lBoard/2;
+      ballVelocity.x = -ballVelocity.x * bounceCoefficient;
     }
 
-    if (location.z > lBoard/2) { 
-      location.z = lBoard/2;
-      velocity.z = -velocity.z * bounceCoefficient;
-    } else if (location.z < -lBoard/2) {
-      location.z = -lBoard/2;
-      velocity.z = -velocity.z * bounceCoefficient;
+    if (ballLocation.z > lBoard/2) { 
+      ballLocation.z = lBoard/2;
+      ballVelocity.z = -ballVelocity.z * bounceCoefficient;
+    } else if (ballLocation.z < -lBoard/2) {
+      ballLocation.z = -lBoard/2;
+      ballVelocity.z = -ballVelocity.z * bounceCoefficient;
     }
   }
 
@@ -53,22 +53,22 @@ class Mover {
   {
     for (int i = 0; i < arrayCylinder.size (); i++)
     {
-      PVector bal = new PVector(location.x, 0, location.z); 
+      PVector bal = new PVector(ballLocation.x, 0, ballLocation.z); 
       PVector cyl = new PVector(arrayCylinder.get(i).x - lBoard/2, 0, arrayCylinder.get(i).y - lBoard/2); 
 
       PVector normal = bal.get();
       normal.sub(cyl);
 
-      if (normal.mag() < cylinderBaseSize +radius)// la balle a touche ! 
+      if (normal.mag() < cylinderRadius +ballRadius)// la balle a touche ! 
       {
         normal.normalize();
-        float dotProd = velocity.dot(normal);
-        velocity.sub(PVector.mult(normal, 2*dotProd));
-        velocity.mult(bounceCoefficient);
+        float dotProd = ballVelocity.dot(normal);
+        ballVelocity.sub(PVector.mult(normal, 2*dotProd));
+        ballVelocity.mult(bounceCoefficient);
         
-        //we slightly move the ball's location so that it never colides 2 frames in a row (which would lead to weird interactions)
-        location.x = arrayCylinder.get(i).x - lBoard/2 + (cylinderBaseSize + radius) * (normal.x);
-        location.z = arrayCylinder.get(i).y - lBoard/2 + (cylinderBaseSize + radius) * (normal.z);
+        //we make sure that the ball stays on the border of the cylinder with which it colides
+        ballLocation.x = arrayCylinder.get(i).x - lBoard/2 + (cylinderRadius + ballRadius) * (normal.x);
+        ballLocation.z = arrayCylinder.get(i).y - lBoard/2 + (cylinderRadius + ballRadius) * (normal.z);
       }
     }
   }

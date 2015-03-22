@@ -16,6 +16,9 @@
 //used for arrowKeys turn
 //float rotVertical = 0;
 
+//WindowSize
+int windowSize = 900;
+
 //rotation that we do
 float rotX = 0;
 float rotZ = 0;
@@ -32,7 +35,7 @@ float mousePositionY;
 float movementScale = 1;
 
 //ball and board attributes
-float radius = 10;
+float ballRadius = 10;
 float lBoard = 250;
 float wBoard = 10;
 
@@ -43,7 +46,7 @@ Mover mover;
 
 
 // cylinder declaration 
-float cylinderBaseSize = 10; 
+float cylinderRadius = 10; 
 float cylinderHeight = 25; 
 int cylinderResolution = 30;
 PShape completeCylinder = new PShape();
@@ -61,9 +64,10 @@ float maxYBoundariesCylinder;
 
 
 
+
 void setup() 
 {
-  size(500, 500, P3D); 
+  size(windowSize, windowSize, P3D); 
   noStroke();
   mover = new Mover();
 }
@@ -73,7 +77,7 @@ void draw() {
   directionalLight(50, 100, 125, 0, 1, 0); 
   ambientLight(102, 102, 102);
   background(200); 
-  
+
 
 
   if (shiftMode) // place cylinder
@@ -85,9 +89,10 @@ void draw() {
     rotateX(PI/2);
     rotateZ(-PI/2);
 
-    if (placeCylinder()) // trouve les valeurs exactes...
+    //We draw a "preview Cylinder" of where the cylinder will be placed once the player clicks, the cylinder isn't drawn if it can't be placed where the mouse is being pointed at
+    if (placeCylinder()) 
     {
-      cylinderAdd(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize)-lBoard/2, map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize)-lBoard/2);
+      cylinderAdd(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius)-lBoard/2, map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius)-lBoard/2);
     }
 
     for (int i = 0; i< arrayCylinder.size (); i++)
@@ -103,7 +108,7 @@ void draw() {
     mover.display();
     popMatrix();
   } else { // not in shift mode
-    camera(250, -1, 250, width/2, height/2, 0, 0, 1, 0); 
+    camera(windowSize/2, -1, windowSize/2, width/2, height/2, 0, 0, 1, 0); 
     //we move the coodinates to have the board in the center of the window
     translate(width/2, height/2, 0);
 
@@ -145,9 +150,7 @@ void mousePressed()
 
     if (placeCylinder()) 
     {
-      PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize), 
-      map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderBaseSize, lBoard-cylinderBaseSize));
-
+      PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
       arrayCylinder.add(cyl);
     }
     popMatrix();
@@ -175,12 +178,37 @@ void mouseDragged()
 
 boolean placeCylinder()
 {
-  float BoardOnScreenSize = screenX(lBoard/2- cylinderBaseSize, lBoard/2- cylinderBaseSize, wBoard/2+cylinderHeight) -  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight);
-  minXBoundariesCylinder =  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight) ;
+  //Check if we're trying to place a cylinder outside of the board
+  float BoardOnScreenSize = screenX(lBoard/2- cylinderRadius, lBoard/2- cylinderRadius, wBoard/2+cylinderHeight) -  screenX(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight);
+  minXBoundariesCylinder =  screenX(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight) ;
   maxXBoundariesCylinder = minXBoundariesCylinder + BoardOnScreenSize;
-  minYBoundariesCylinder = screenY(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight);
+  minYBoundariesCylinder = screenY(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight);
   maxYBoundariesCylinder = minYBoundariesCylinder + BoardOnScreenSize; 
-  return (mouseX >= minXBoundariesCylinder && mouseX <= maxXBoundariesCylinder) && (mouseY > minYBoundariesCylinder && mouseY < maxYBoundariesCylinder);
+  boolean outsideX = mouseX >= minXBoundariesCylinder && mouseX <= maxXBoundariesCylinder;
+  boolean outsideY = mouseY > minYBoundariesCylinder && mouseY < maxYBoundariesCylinder;
+  
+  
+  //stop right now if we're trying to draw out of bounds
+  if (!(outsideX && outsideY)) {
+    return false;
+  }
+
+  //Check if we're trying to place a cylinder on an other
+  PVector tmp = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
+
+  for (int i = 0; i < arrayCylinder.size (); i++) {
+    if (PVector.sub(tmp, arrayCylinder.get(i)).mag()  < cylinderRadius*2) {
+      return false;
+    }
+  }
+
+  //Check if we're trying to place a cylinder on the ball
+  /*tmp2 = tmp;
+   if (PVector.sub(tmp, mover.ballLocation).mag() < cylinderRadius + ballRadius) {
+   return false;
+   }*/
+
+  return true;
 }
 
 
@@ -239,13 +267,15 @@ void cylinderAdd(float positionX, float positionY)
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
     angle = (TWO_PI / cylinderResolution) * i; 
-    x[i] = sin(angle) * cylinderBaseSize + positionX ; 
-    y[i] = cos(angle) * cylinderBaseSize + positionY ;
+    x[i] = sin(angle) * cylinderRadius + positionX ; 
+    y[i] = cos(angle) * cylinderRadius + positionY ;
   }
 
   //corps
   openCylinder = createShape();
   openCylinder.beginShape(QUAD_STRIP);
+  openCylinder.fill(color(#10B43D));
+
   //draw the border of the cylinder
   for (int i = 0; i < x.length; i++) { 
     openCylinder.vertex(x[i], y[i], wBoard/2); 
@@ -255,10 +285,11 @@ void cylinderAdd(float positionX, float positionY)
 
   cylinderTop = createShape();
   cylinderTop.beginShape(TRIANGLES);
+  cylinderTop.fill(color(#10B43D));
 
   cylinderBottom = createShape();
   cylinderBottom.beginShape(TRIANGLES);
-
+  cylinderBottom.fill(color(#10B43D));
 
   for (int i = 0; i< x.length-1; i++) {
     cylinderTop.vertex(x[i], y[i], cylinderHeight+ wBoard/2); 

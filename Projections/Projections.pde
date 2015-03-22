@@ -103,7 +103,7 @@ float[][] rotateYMatrix(float angle) {
     }
     , 
     {
-      0, 0, 1, 0
+      0, 1, 0, 0
     }
     , 
     {
@@ -119,7 +119,7 @@ float[][] rotateYMatrix(float angle) {
 float[][] rotateZMatrix(float angle) {
   return(new float[][] {
     {
-      cos(angle), -sin(angle), 0, 0
+      cos(angle), sin(angle), 0, 0
     }
     , 
     {
@@ -199,7 +199,7 @@ My3DBox transformBox(My3DBox box, float[][] transformMatrix) {
   return new My3DBox(x);
 }
 void setup () { 
-  size(700, 700, P2D);
+  size(1000, 1000, P2D);
 }
 void draw() {
   background(255, 255, 255);
