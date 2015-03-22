@@ -34,7 +34,7 @@ float movementScale = 1;
 //ball and board attributes
 float radius = 10;
 float lBoard = 250;
-float wBoard = 100;
+float wBoard = 10;
 
 //movement attributes
 PVector gravityForce = new PVector(0, 0, 0);
@@ -72,7 +72,8 @@ void draw() {
   //ambient settings
   directionalLight(50, 100, 125, 0, 1, 0); 
   ambientLight(102, 102, 102);
-  background(200);
+  background(200); 
+  
 
 
   if (shiftMode) // place cylinder
@@ -111,8 +112,6 @@ void draw() {
 
 
     box(lBoard, wBoard, lBoard);
-    gravityForce.x = sin(rotZ) * gravityConstant;
-    gravityForce.z = sin(rotX) * gravityConstant;
 
 
     //draw cylinder
@@ -176,14 +175,9 @@ void mouseDragged()
 
 boolean placeCylinder()
 {
-
   float BoardOnScreenSize = screenX(lBoard/2- cylinderBaseSize, lBoard/2- cylinderBaseSize, wBoard/2+cylinderHeight) -  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight);
   minXBoundariesCylinder =  screenX(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight) ;
   maxXBoundariesCylinder = minXBoundariesCylinder + BoardOnScreenSize;
-  println(minXBoundariesCylinder);
-  println(mouseX);
-  println("---");
-
   minYBoundariesCylinder = screenY(-lBoard/2+ cylinderBaseSize, -lBoard/2+ cylinderBaseSize, wBoard/2+cylinderHeight);
   maxYBoundariesCylinder = minYBoundariesCylinder + BoardOnScreenSize; 
   return (mouseX >= minXBoundariesCylinder && mouseX <= maxXBoundariesCylinder) && (mouseY > minYBoundariesCylinder && mouseY < maxYBoundariesCylinder);
@@ -259,25 +253,24 @@ void cylinderAdd(float positionX, float positionY)
   }
   openCylinder.endShape();
 
-  //top
   cylinderTop = createShape();
-  cylinderTop.beginShape(TRIANGLE_FAN);
-  cylinderTop.vertex(positionX, positionY, cylinderHeight + wBoard/2);
-  for (int i = 0; i < x.length; i++) {
-    cylinderTop.vertex(x[i], y[i], cylinderHeight + wBoard/2);
-  }
-  cylinderTop.vertex(x[0], y[0], cylinderHeight + wBoard/2);
-  cylinderTop.endShape();  
+  cylinderTop.beginShape(TRIANGLES);
 
-  //bottom
   cylinderBottom = createShape();
-  cylinderBottom.beginShape(TRIANGLE_FAN);
-  cylinderBottom.vertex(positionX, positionY, wBoard/2);
-  for (int i = 0; i < x.length; i++) {
-    cylinderBottom.vertex(x[i], y[i], wBoard/2);
+  cylinderBottom.beginShape(TRIANGLES);
+
+
+  for (int i = 0; i< x.length-1; i++) {
+    cylinderTop.vertex(x[i], y[i], cylinderHeight+ wBoard/2); 
+    cylinderTop.vertex(x[i+1], y[i+1], cylinderHeight+ wBoard/2);
+    cylinderTop.vertex(positionX, positionY, cylinderHeight+ wBoard/2);
+    cylinderBottom.vertex(x[i], y[i], wBoard/2); 
+    cylinderBottom.vertex(x[i+1], y[i+1], wBoard/2);
+    cylinderBottom.vertex(positionX, positionY, wBoard/2);
   }
-  cylinderBottom.vertex(x[0], y[0], wBoard/2);
+
   cylinderBottom.endShape();
+  cylinderTop.endShape();
 
   completeCylinder.addChild(openCylinder);
   completeCylinder.addChild(cylinderTop);
