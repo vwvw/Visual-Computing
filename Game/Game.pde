@@ -63,8 +63,6 @@ float minYBoundariesCylinder;
 float maxYBoundariesCylinder;
 
 
-
-
 void setup() 
 {
   size(windowSize, windowSize, P3D); 
@@ -186,8 +184,8 @@ boolean placeCylinder()
   maxYBoundariesCylinder = minYBoundariesCylinder + BoardOnScreenSize; 
   boolean outsideX = mouseX >= minXBoundariesCylinder && mouseX <= maxXBoundariesCylinder;
   boolean outsideY = mouseY > minYBoundariesCylinder && mouseY < maxYBoundariesCylinder;
-  
-  
+
+
   //stop right now if we're trying to draw out of bounds
   if (!(outsideX && outsideY)) {
     return false;
@@ -203,10 +201,10 @@ boolean placeCylinder()
   }
 
   //Check if we're trying to place a cylinder on the ball
-  /*tmp2 = tmp;
-   if (PVector.sub(tmp, mover.ballLocation).mag() < cylinderRadius + ballRadius) {
-   return false;
-   }*/
+  tmp = new PVector(tmp.x - lBoard/2, -wBoard/2 - ballRadius, tmp.y- lBoard/2);
+  if (PVector.sub(tmp, mover.ballLocation).mag() < cylinderRadius + ballRadius) {
+    return false;
+  }
 
   return true;
 }
