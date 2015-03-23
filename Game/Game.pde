@@ -54,7 +54,9 @@ PShape openCylinder = new PShape();
 PShape cylinderTop = new PShape();
 PShape cylinderBottom = new PShape();
 boolean shiftMode = false; //true = place cylinder
-ArrayList<PVector> arrayCylinder = new ArrayList<PVector>();
+ArrayList<PVector> arrayCylinderPosition = new ArrayList<PVector>();
+ArrayList<PShape> arrayCylinderShape= new ArrayList<PShape>();
+
 
 
 float minXBoundariesCylinder;
@@ -86,21 +88,20 @@ void draw() {
     pushMatrix();
     rotateX(PI/2);
     rotateZ(-PI/2);
-
     //We draw a "preview Cylinder" of where the cylinder will be placed once the player clicks, the cylinder isn't drawn if it can't be placed where the mouse is being pointed at
-    if (placeCylinder()) 
+    if (canPlaceCylinder()) 
     {
-      cylinderAdd(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius)-lBoard/2, map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius)-lBoard/2);
+    PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
+    shape(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
     }
-
-    for (int i = 0; i< arrayCylinder.size (); i++)
+    //drawing existing cylinder
+    for (int i = 0; i< arrayCylinderShape.size (); i++)
     {
-      float positionX = arrayCylinder.get(i).x-lBoard/2;
-      float positionY = arrayCylinder.get(i).y-lBoard/2;
-      cylinderAdd(positionX, positionY);
-    } 
-
+      shape(arrayCylinderShape.get(i));
+    }
     popMatrix();
+    
+    //ball drwaing
     pushMatrix();
     rotateY(PI/2);
     mover.display();
@@ -109,27 +110,20 @@ void draw() {
     camera(windowSize/2, -1, windowSize/2, width/2, height/2, 0, 0, 1, 0); 
     //we move the coodinates to have the board in the center of the window
     translate(width/2, height/2, 0);
-
     rotateZ(rotZ); 
     rotateX(-rotX);
-
-
     box(lBoard, wBoard, lBoard);
-
 
     //draw cylinder
     pushMatrix();
     rotateX(PI/2);
-
-    for (int i = 0; i< arrayCylinder.size (); i++)
+    for (int i = 0; i< arrayCylinderShape.size (); i++)
     {
-      float positionX = arrayCylinder.get(i).x-lBoard/2;
-      float positionY = arrayCylinder.get(i).y-lBoard/2;
-      cylinderAdd(positionX, positionY);
+      shape(arrayCylinderShape.get(i));
     }
     popMatrix();
 
-
+    //move and draw ball
     pushMatrix();
     mover.update();
     mover.display();
@@ -146,10 +140,11 @@ void mousePressed()
     rotateX(PI/2);
     rotateZ(-PI/2);
 
-    if (placeCylinder()) 
+    if (canPlaceCylinder()) 
     {
-      PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
-      arrayCylinder.add(cyl);
+    PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
+    arrayCylinderPosition.add(cyl);
+    arrayCylinderShape.add(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
     }
     popMatrix();
   } else {
@@ -174,7 +169,7 @@ void mouseDragged()
 
 
 
-boolean placeCylinder()
+boolean canPlaceCylinder()
 {
   //Check if we're trying to place a cylinder outside of the board
   float BoardOnScreenSize = screenX(lBoard/2- cylinderRadius, lBoard/2- cylinderRadius, wBoard/2+cylinderHeight) -  screenX(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight);
@@ -194,8 +189,8 @@ boolean placeCylinder()
   //Check if we're trying to place a cylinder on an other
   PVector tmp = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
 
-  for (int i = 0; i < arrayCylinder.size (); i++) {
-    if (PVector.sub(tmp, arrayCylinder.get(i)).mag()  < cylinderRadius*2) {
+  for (int i = 0; i < arrayCylinderPosition.size (); i++) {
+    if (PVector.sub(tmp, arrayCylinderPosition.get(i)).mag()  < cylinderRadius*2) {
       return false;
     }
   }
@@ -205,7 +200,6 @@ boolean placeCylinder()
   if (PVector.sub(tmp, mover.ballLocation).mag() < cylinderRadius + ballRadius) {
     return false;
   }
-
   return true;
 }
 
@@ -251,7 +245,8 @@ void mouseWheel(MouseEvent event) {
   }
 }
 
-void cylinderAdd(float positionX, float positionY)
+//create a new shape for a cylinder, you can add it to cylinderShape Array
+PShape cylinderShaper(float positionX, float positionY)
 {
 
   // position x : centre du cylindre par rapport à la plaque. 
@@ -304,7 +299,6 @@ void cylinderAdd(float positionX, float positionY)
   completeCylinder.addChild(openCylinder);
   completeCylinder.addChild(cylinderTop);
   completeCylinder.addChild(cylinderBottom);
-
-  shape(completeCylinder);
+  return completeCylinder;
 }
 
