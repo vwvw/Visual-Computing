@@ -51,15 +51,15 @@ class Mover {
 
   void checkCylinderCollision()
   {
-    for (int i = 0; i < arrayCylinderPosition.size (); i++)
+    for (int i = 0; i < cylinder.arrayCylinderPosition.size (); i++)
     {
       PVector bal = new PVector(ballLocation.x, 0, ballLocation.z); 
-      PVector cyl = new PVector(arrayCylinderPosition.get(i).x - lBoard/2, 0, arrayCylinderPosition.get(i).y - lBoard/2); 
+      PVector cyl = new PVector(cylinder.arrayCylinderPosition.get(i).x - lBoard/2, 0, cylinder.arrayCylinderPosition.get(i).y - lBoard/2); 
 
       PVector normal = bal.get();
       normal.sub(cyl);
 
-      if (normal.mag() < cylinderRadius +ballRadius)// la balle a touche ! 
+      if (normal.mag() < cylinder.cylinderRadius +ballRadius)// la balle a touche ! 
       {
         normal.normalize();
         float dotProd = ballVelocity.dot(normal);
@@ -67,8 +67,8 @@ class Mover {
         ballVelocity.mult(bounceCoefficient);
         
         //we make sure that the ball stays on the border of the cylinder with which it colides
-        ballLocation.x = arrayCylinderPosition.get(i).x - lBoard/2 + (cylinderRadius + ballRadius) * (normal.x);
-        ballLocation.z = arrayCylinderPosition.get(i).y - lBoard/2 + (cylinderRadius + ballRadius) * (normal.z);
+        ballLocation.x = cylinder.arrayCylinderPosition.get(i).x - lBoard/2 + (cylinder.cylinderRadius + ballRadius) * (normal.x);
+        ballLocation.z = cylinder.arrayCylinderPosition.get(i).y - lBoard/2 + (cylinder.cylinderRadius + ballRadius) * (normal.z);
       }
     }
   }
