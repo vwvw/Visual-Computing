@@ -64,71 +64,25 @@ float maxXBoundariesCylinder;
 float minYBoundariesCylinder;
 float maxYBoundariesCylinder;
 
+PGraphics scoreSurface;
+PGraphics gameSurface;
 
 void setup() 
 {
-  size(windowSize, windowSize, P3D); 
+  size(windowSize, windowSize, P2D); 
   noStroke();
   mover = new Mover();
+  scoreSurface = createGraphics(windowSize, 100, P2D);
+  gameSurface = createGraphics(windowSize,  windowSize-100, P3D);
 }
 
 void draw() {
   //ambient settings
-  directionalLight(50, 100, 125, 0, 1, 0); 
-  ambientLight(102, 102, 102);
-  background(200); 
 
-
-
-  if (shiftMode) // place cylinder
-  {
-    camera(0, -400, 0, 0, 0, 0, 1, 1, 0); // on se place droit en dessus
-    box(lBoard, wBoard, lBoard);
-
-    pushMatrix();
-    rotateX(PI/2);
-    rotateZ(-PI/2);
-    //We draw a "preview Cylinder" of where the cylinder will be placed once the player clicks, the cylinder isn't drawn if it can't be placed where the mouse is being pointed at
-    if (canPlaceCylinder()) 
-    {
-    PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
-    shape(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
-    }
-    //drawing existing cylinder
-    for (int i = 0; i< arrayCylinderShape.size (); i++)
-    {
-      shape(arrayCylinderShape.get(i));
-    }
-    popMatrix();
-    
-    //ball drwaing
-    pushMatrix();
-    rotateY(PI/2);
-    mover.display();
-    popMatrix();
-  } else { // not in shift mode
-    camera(windowSize/2, -1, windowSize/2, width/2, height/2, 0, 0, 1, 0); 
-    //we move the coodinates to have the board in the center of the window
-    translate(width/2, height/2, 0);
-    rotateZ(rotZ); 
-    rotateX(-rotX);
-    box(lBoard, wBoard, lBoard);
-
-    //draw cylinder
-    pushMatrix();
-    rotateX(PI/2);
-    for (int i = 0; i< arrayCylinderShape.size (); i++)
-    {
-      shape(arrayCylinderShape.get(i));
-    }
-    popMatrix();
-
-    //move and draw ball
-    pushMatrix();
-    mover.update();
-    mover.display();
-    popMatrix();
-  }
+  drawScoreSurface();
+  image(scoreSurface, 0, windowSize-100);
+  drawGameSurface();
+  image(gameSurface, 0, 0);
 }
 
 //we save the mouse position, and archive the rotation level
@@ -142,9 +96,9 @@ void mousePressed()
 
     if (canPlaceCylinder()) 
     {
-    PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
-    arrayCylinderPosition.add(cyl);
-    arrayCylinderShape.add(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
+      PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
+      arrayCylinderPosition.add(cyl);
+      arrayCylinderShape.add(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
     }
     popMatrix();
   } else {
@@ -300,5 +254,75 @@ PShape cylinderShaper(float positionX, float positionY)
   completeCylinder.addChild(cylinderTop);
   completeCylinder.addChild(cylinderBottom);
   return completeCylinder;
+}
+
+void drawScoreSurface()
+{
+  scoreSurface.beginDraw(); 
+  scoreSurface.background(0); 
+  scoreSurface.ellipse(50, 50, 25, 25); 
+  scoreSurface.endDraw();
+}
+
+void drawGameSurface()
+{
+  gameSurface.beginDraw();
+    gameSurface.directionalLight(50, 100, 125, 0, 1, 0); 
+  gameSurface.ambientLight(102, 102, 102);
+  gameSurface.background(200); 
+  
+  pushMatrix();
+
+  if (shiftMode) // place cylinder
+  {
+    camera(0, -400, 0, 0, 0, 0, 1, 1, 0); // on se place droit en dessus
+    gameSurface.box(lBoard, wBoard, lBoard);
+
+    pushMatrix();
+    gameSurface.rotateX(PI/2);
+    gameSurface.rotateZ(-PI/2);
+    //We draw a "preview Cylinder" of where the cylinder will be placed once the player clicks, the cylinder isn't drawn if it can't be placed where the mouse is being pointed at
+    if (canPlaceCylinder()) 
+    {
+      PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
+      gameSurface.shape(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
+    }
+    //drawing existing cylinder
+    for (int i = 0; i< arrayCylinderShape.size (); i++)
+    {
+      gameSurface.shape(arrayCylinderShape.get(i));
+    }
+    popMatrix();
+
+    //ball drwaing
+    pushMatrix();
+    gameSurface.rotateY(PI/2);
+    mover.display();
+    popMatrix();
+  } else { // not in shift mode
+    camera(windowSize/2, -1, windowSize/2, width/2, height/2, 0, 0, 1, 0); 
+    //we move the coodinates to have the board in the center of the window
+    gameSurface.translate(width/2, height/2, 0);
+    gameSurface.rotateZ(rotZ); 
+    gameSurface.rotateX(-rotX);
+    gameSurface.box(lBoard, wBoard, lBoard);
+
+    //draw cylinder
+    pushMatrix();
+    gameSurface.rotateX(PI/2);
+    for (int i = 0; i< arrayCylinderShape.size (); i++)
+    {
+      gameSurface.shape(arrayCylinderShape.get(i));
+    }
+    popMatrix();
+
+    //move and draw ball
+    pushMatrix();
+    mover.update();
+    mover.display();
+    popMatrix();
+    popMatrix();
+  }
+  gameSurface.endDraw();
 }
 

@@ -27,8 +27,8 @@ class Mover {
   }
 
   void display() {
-    translate(ballLocation.x, ballLocation.y, ballLocation.z);
-    sphere(ballRadius);
+    gameSurface.translate(ballLocation.x, ballLocation.y, ballLocation.z);
+    gameSurface.sphere(ballRadius);
   }
 
   void checkEdges() {
