@@ -101,7 +101,6 @@ void mousePressed()
     {
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
       arrayCylinderPosition.add(cyl);
-      println("hello");
       arrayCylinderShape.add(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
     }
     gameSurface.popMatrix();
@@ -274,7 +273,6 @@ void drawGameSurface()
   gameSurface.ambientLight(102, 102, 102);
   gameSurface.background(200); 
 
-  gameSurface.pushMatrix();
 
   if (shiftMode) // place cylinder
   {
@@ -289,8 +287,8 @@ void drawGameSurface()
     {
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
       gameSurface.shape(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
-      println("h");
     }
+    
     //drawing existing cylinder
     for (int i = 0; i< arrayCylinderShape.size(); i++)
     {
@@ -327,7 +325,6 @@ void drawGameSurface()
     mover.display();
     gameSurface.popMatrix();
   }
-  gameSurface.popMatrix();
   gameSurface.endDraw();
 }
 
