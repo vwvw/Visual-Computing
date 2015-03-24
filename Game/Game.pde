@@ -17,7 +17,7 @@
 //float rotVertical = 0;
 
 //WindowSize
-int windowSize = 900;
+int windowSize = 500;
 
 //rotation that we do
 float rotX = 0;
@@ -70,10 +70,13 @@ PGraphics gameSurface;
 void setup() 
 {
   size(windowSize, windowSize, P2D); 
-  noStroke();
+  
   mover = new Mover();
   scoreSurface = createGraphics(windowSize, 100, P2D);
-  gameSurface = createGraphics(windowSize,  windowSize-100, P3D);
+  gameSurface = createGraphics(windowSize, windowSize-100, P3D);
+  gameSurface.noStroke();
+  scoreSurface.noStroke();
+  noStroke();
 }
 
 void draw() {
@@ -90,17 +93,18 @@ void mousePressed()
 {
   if (shiftMode)
   {
-    pushMatrix();
-    rotateX(PI/2);
-    rotateZ(-PI/2);
+    gameSurface.pushMatrix();
+    gameSurface.rotateX(PI/2);
+    gameSurface.rotateZ(-PI/2);
 
     if (canPlaceCylinder()) 
     {
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
       arrayCylinderPosition.add(cyl);
+      println("hello");
       arrayCylinderShape.add(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
     }
-    popMatrix();
+    gameSurface.popMatrix();
   } else {
     mousePositionX = mouseX;
     mousePositionY = mouseY;
@@ -126,10 +130,10 @@ void mouseDragged()
 boolean canPlaceCylinder()
 {
   //Check if we're trying to place a cylinder outside of the board
-  float BoardOnScreenSize = screenX(lBoard/2- cylinderRadius, lBoard/2- cylinderRadius, wBoard/2+cylinderHeight) -  screenX(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight);
-  minXBoundariesCylinder =  screenX(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight) ;
+  float BoardOnScreenSize = gameSurface.screenX(lBoard/2- cylinderRadius, lBoard/2- cylinderRadius, wBoard/2+cylinderHeight) -  gameSurface.screenX(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight);
+  minXBoundariesCylinder =  gameSurface.screenX(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight) ;
   maxXBoundariesCylinder = minXBoundariesCylinder + BoardOnScreenSize;
-  minYBoundariesCylinder = screenY(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight);
+  minYBoundariesCylinder = gameSurface.screenY(-lBoard/2+ cylinderRadius, -lBoard/2+ cylinderRadius, wBoard/2+cylinderHeight);
   maxYBoundariesCylinder = minYBoundariesCylinder + BoardOnScreenSize; 
   boolean outsideX = mouseX >= minXBoundariesCylinder && mouseX <= maxXBoundariesCylinder;
   boolean outsideY = mouseY > minYBoundariesCylinder && mouseY < maxYBoundariesCylinder;
@@ -209,7 +213,7 @@ PShape cylinderShaper(float positionX, float positionY)
   float angle;
   float[] x = new float[cylinderResolution + 1]; 
   float[] y = new float[cylinderResolution + 1];
-  completeCylinder = createShape(GROUP);
+  completeCylinder = gameSurface.createShape(GROUP);
 
   //get the x and y position on a circle for all the sides
   for (int i = 0; i < x.length; i++) {
@@ -219,7 +223,7 @@ PShape cylinderShaper(float positionX, float positionY)
   }
 
   //corps
-  openCylinder = createShape();
+  openCylinder = gameSurface.createShape();
   openCylinder.beginShape(QUAD_STRIP);
   openCylinder.fill(color(#10B43D));
 
@@ -230,11 +234,11 @@ PShape cylinderShaper(float positionX, float positionY)
   }
   openCylinder.endShape();
 
-  cylinderTop = createShape();
+  cylinderTop = gameSurface.createShape();
   cylinderTop.beginShape(TRIANGLES);
   cylinderTop.fill(color(#10B43D));
 
-  cylinderBottom = createShape();
+  cylinderBottom = gameSurface.createShape();
   cylinderBottom.beginShape(TRIANGLES);
   cylinderBottom.fill(color(#10B43D));
 
@@ -259,26 +263,25 @@ PShape cylinderShaper(float positionX, float positionY)
 void drawScoreSurface()
 {
   scoreSurface.beginDraw(); 
-  scoreSurface.background(0); 
-  scoreSurface.ellipse(50, 50, 25, 25); 
+  scoreSurface.background(0);
   scoreSurface.endDraw();
 }
 
 void drawGameSurface()
 {
   gameSurface.beginDraw();
-    gameSurface.directionalLight(50, 100, 125, 0, 1, 0); 
+  gameSurface.directionalLight(50, 100, 125, 0, 1, 0); 
   gameSurface.ambientLight(102, 102, 102);
   gameSurface.background(200); 
-  
-  pushMatrix();
+
+  gameSurface.pushMatrix();
 
   if (shiftMode) // place cylinder
   {
-    camera(0, -400, 0, 0, 0, 0, 1, 1, 0); // on se place droit en dessus
+    gameSurface.camera(0, -400, 0, 0, 0, 0, 1, 1, 0); // on se place droit en dessus
     gameSurface.box(lBoard, wBoard, lBoard);
 
-    pushMatrix();
+    gameSurface.pushMatrix();
     gameSurface.rotateX(PI/2);
     gameSurface.rotateZ(-PI/2);
     //We draw a "preview Cylinder" of where the cylinder will be placed once the player clicks, the cylinder isn't drawn if it can't be placed where the mouse is being pointed at
@@ -286,21 +289,23 @@ void drawGameSurface()
     {
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
       gameSurface.shape(cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
+      println("h");
     }
     //drawing existing cylinder
-    for (int i = 0; i< arrayCylinderShape.size (); i++)
+    for (int i = 0; i< arrayCylinderShape.size(); i++)
     {
       gameSurface.shape(arrayCylinderShape.get(i));
     }
-    popMatrix();
+    //println(arrayCylinderShape.size());
+    gameSurface.popMatrix();
 
     //ball drwaing
-    pushMatrix();
+    gameSurface.pushMatrix();
     gameSurface.rotateY(PI/2);
     mover.display();
-    popMatrix();
+    gameSurface.popMatrix();
   } else { // not in shift mode
-    camera(windowSize/2, -1, windowSize/2, width/2, height/2, 0, 0, 1, 0); 
+    gameSurface.camera(windowSize/2, -1, windowSize/2, width/2, height/2, 0, 0, 1, 0); 
     //we move the coodinates to have the board in the center of the window
     gameSurface.translate(width/2, height/2, 0);
     gameSurface.rotateZ(rotZ); 
@@ -308,21 +313,21 @@ void drawGameSurface()
     gameSurface.box(lBoard, wBoard, lBoard);
 
     //draw cylinder
-    pushMatrix();
+    gameSurface.pushMatrix();
     gameSurface.rotateX(PI/2);
     for (int i = 0; i< arrayCylinderShape.size (); i++)
     {
       gameSurface.shape(arrayCylinderShape.get(i));
     }
-    popMatrix();
+    gameSurface.popMatrix();
 
     //move and draw ball
-    pushMatrix();
+    gameSurface.pushMatrix();
     mover.update();
     mover.display();
-    popMatrix();
-    popMatrix();
+    gameSurface.popMatrix();
   }
+  gameSurface.popMatrix();
   gameSurface.endDraw();
 }
 
