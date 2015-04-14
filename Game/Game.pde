@@ -67,6 +67,7 @@ float maxYBoundariesCylinder;
 PGraphics scoreSurface;
 PGraphics gameSurface;
 
+PShape tree;
 void setup() 
 {
   size(windowSize, windowSize, P2D); 
@@ -75,6 +76,8 @@ void setup()
   cylinder = new Cylinder();
   scoreSurface = createGraphics(windowSize, 100, P2D);
   gameSurface = createGraphics(windowSize, windowSize-100, P3D);
+  tree = loadShape("simpleTree.obj");
+  tree.scale(10);
   
 }
 
@@ -201,7 +204,12 @@ void drawGameSurface()
     if (cylinder.canPlaceCylinder()) 
     {
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
-      gameSurface.shape(cylinder.cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
+      //gameSurface.shape(cylinder.cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
+      gameSurface.pushMatrix();
+      gameSurface. translate(cyl.x-lBoard/2,  cyl.y-lBoard/2,0);
+      gameSurface.rotateX(PI/2);
+      gameSurface.shape(tree);
+      gameSurface.popMatrix();
     }
     
     //drawing existing cylinder
