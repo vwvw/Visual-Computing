@@ -1,3 +1,2 @@
 # firstRepo
 Visual Computing
-Hahah
