@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="processing_libs/core.jar"/>
+	<classpathentry kind="lib" path="processing_libs/gluegen-rt-natives-macosx-universal.jar"/>
+	<classpathentry kind="lib" path="processing_libs/gluegen-rt-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="processing_libs/gluegen-rt-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="processing_libs/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="processing_libs/jogl-all-natives-macosx-universal.jar"/>
+	<classpathentry kind="lib" path="processing_libs/jogl-all-natives-windows-amd64.jar"/>
+	<classpathentry kind="lib" path="processing_libs/jogl-all-natives-windows-i586.jar"/>
+	<classpathentry kind="lib" path="processing_libs/jogl-all.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

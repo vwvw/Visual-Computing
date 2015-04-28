@@ -66,6 +66,6 @@ public class TopView {
         
         if(!parent.shiftMode){
             previousBallLocation.add(parent.mover.ballLocation.get());        
-        }//*/
+        }
     }
 }

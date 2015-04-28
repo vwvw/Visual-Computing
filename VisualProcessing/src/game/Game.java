@@ -112,7 +112,7 @@ public class Game extends PApplet {
     }
 
     public void draw() {
-
+        
         // ambient settings
         noStroke();
         view3D.draw();

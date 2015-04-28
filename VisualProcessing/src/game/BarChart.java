@@ -40,9 +40,10 @@ public class BarChart {
         for(int i = 0; i < scores.size(); i++){
             int score = scores.get(i);
             int rects = score/5;
-            
+           
             for(int j = 0; j < rects; j++){
-                surface.rect((i*parent.scrollBar.getPos())*6, height - (j+1)*6, 4, 4);
+                float rectWidth = (float) (8*(parent.scrollBar.getPos() + 0.2));
+                surface.rect(i*rectWidth + i, height-5*(j+1) - j, rectWidth, 5);
             }
         }
         surface.endDraw();
