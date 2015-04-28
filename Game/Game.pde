@@ -19,6 +19,13 @@
 //WindowSize
 int windowSize = 500;
 
+//ScoreBoard
+int scoreBoardSize = 100;
+
+//TopView
+int topViewSize = 80;
+float offsetLeft = 10;
+
 //rotation that we do
 float rotX = 0;
 float rotZ = 0;
@@ -66,31 +73,36 @@ float maxYBoundariesCylinder;
 
 PGraphics scoreSurface;
 PGraphics gameSurface;
+PGraphics topViewSurface;
 
 PShape tree;
 void setup() 
 {
   size(windowSize, windowSize, P2D); 
-  
+
   mover = new Mover();
   cylinder = new Cylinder();
-  scoreSurface = createGraphics(windowSize, 100, P2D);
-  gameSurface = createGraphics(windowSize, windowSize-100, P3D);
+  scoreSurface = createGraphics(windowSize, scoreBoardSize, P2D);
+  topViewSurface = createGraphics(topViewSize, topViewSize, P2D);
+  gameSurface = createGraphics(windowSize, windowSize-scoreBoardSize, P3D);
   tree = loadShape("simpleTree.obj");
   tree.scale(10);
-  
 }
 
 void draw() {
   //ambient settings
   gameSurface.noStroke();
   scoreSurface.noStroke();
+  topViewSurface.noStroke();
   noStroke();
 
   drawScoreSurface();
-  image(scoreSurface, 0, windowSize-100);
+  image(scoreSurface, 0, windowSize-scoreBoardSize);
   drawGameSurface();
   image(gameSurface, 0, 0);
+  drawTopViewSurface();
+  image(topViewSurface, offsetLeft, windowSize-scoreBoardSize + (scoreBoardSize - topViewSize)/2);
+  
 }
 
 //we save the mouse position, and archive the rotation level
@@ -128,10 +140,6 @@ void mouseDragged()
   if (rotZ > PI/3) rotZ = PI/3; 
   if (rotZ < -PI/3) rotZ = -PI/3;
 }
-
-
-
-
 
 
 //vertical rotation with arrow keys
@@ -184,6 +192,20 @@ void drawScoreSurface()
   scoreSurface.endDraw();
 }
 
+void drawTopViewSurface() {
+  topViewSurface.beginDraw(); 
+  topViewSurface.background(255);
+  topViewSurface.fill(color(#990000));
+  topViewSurface.ellipse(mover.ballLocation.x * topViewSize/lBoard + topViewSize/2, mover.ballLocation.z *topViewSize /lBoard  + topViewSize/2, ballRadius * topViewSize/lBoard* 2   , ballRadius * 2* topViewSize/lBoard);
+    topViewSurface.fill(color(#10B43D));
+
+   for (int i = 0; i< arrayCylinderShape.size (); i++)
+    {
+      topViewSurface.ellipse(arrayCylinderPosition.get(i).x * topViewSize/lBoard , arrayCylinderPosition.get(i).y *topViewSize /lBoard,cylinderRadius * topViewSize/lBoard * 2, cylinderRadius* 2 * topViewSize/lBoard);
+    }
+  topViewSurface.endDraw();
+}
+
 void drawGameSurface()
 {
   gameSurface.beginDraw();
@@ -206,14 +228,14 @@ void drawGameSurface()
       PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder, maxXBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius), map(mouseY, minYBoundariesCylinder, maxYBoundariesCylinder, cylinderRadius, lBoard-cylinderRadius));
       //gameSurface.shape(cylinder.cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
       gameSurface.pushMatrix();
-      gameSurface. translate(cyl.x-lBoard/2,  cyl.y-lBoard/2,0);
+      gameSurface. translate(cyl.x-lBoard/2, cyl.y-lBoard/2, 0);
       gameSurface.rotateX(PI/2);
       gameSurface.shape(tree);
       gameSurface.popMatrix();
     }
-    
+
     //drawing existing cylinder
-    for (int i = 0; i< arrayCylinderShape.size(); i++)
+    for (int i = 0; i< arrayCylinderShape.size (); i++)
     {
       gameSurface.shape(arrayCylinderShape.get(i));
     }
