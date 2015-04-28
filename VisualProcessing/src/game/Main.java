@@ -1,10 +1,19 @@
 package game;
-import processing.core.PApplet;
+import java.awt.Frame;
+
+
+
 
 
 
 public class Main {
     public static void main(String args[]) {
-        PApplet.main(new String[] { "--present", "Game" });
+        Game game = new Game();
+        Frame frame = new Frame();
+        frame.setSize(game.windowSize, game.windowSize);
+        frame.add(game);
+        frame.setVisible(true);
+        frame.setResizable(false);
+        
       }
 }

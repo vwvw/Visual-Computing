@@ -11,6 +11,7 @@ public class BarChart {
     int timeInSecs;
     PGraphics surface;
     int height; 
+    int width;
     ArrayList<Integer> scores;
     
     
@@ -18,7 +19,7 @@ public class BarChart {
         parent = p;
         timeInSecs = PApplet.second();
         height = barChartHeight;
-        int width = parent.windowSize - (int)(parent.offsetLeft)*4 - parent.topViewSize - parent.scoreViewWidth;
+        width = parent.windowSize - (int)(parent.offsetLeft)*4 - parent.topViewSize - parent.scoreViewWidth;
         surface = parent.createGraphics(width, barChartHeight);
         scores = new ArrayList<>();
         scores.add(parent.scoreView.score());
@@ -27,7 +28,7 @@ public class BarChart {
     public void draw(){    
         int tmp = (PApplet.second() - timeInSecs) % 60;
         tmp = tmp < 0 ? tmp + 60 : tmp;
-        if(tmp >= 3){
+        if(tmp >= 2){
             timeInSecs = PApplet.second();
             scores.add(parent.scoreView.score());        
         }
@@ -39,10 +40,12 @@ public class BarChart {
         surface.fill(222, 0,0);
         for(int i = 0; i < scores.size(); i++){
             int score = scores.get(i);
-            int rects = score/5;
+            int rects = score/4;
            
             for(int j = 0; j < rects; j++){
-                float rectWidth = (float) (8*(parent.scrollBar.getPos() + 0.2));
+                
+                float rectWidth = (width * parent.scrollBar.getPos() / scores.size()) - 1;
+                rectWidth = rectWidth < 1 ? 1 : rectWidth;
                 surface.rect(i*rectWidth + i, height-5*(j+1) - j, rectWidth, 5);
             }
         }

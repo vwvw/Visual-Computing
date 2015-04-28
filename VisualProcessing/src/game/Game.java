@@ -26,7 +26,7 @@ public class Game extends PApplet {
     // float rotVertical = 0;
 
     // WindowSize
-    int windowSize = 400;
+    final int windowSize = 700;
 
     // ScoreBoard
     int scoreBoardSize = 120;
@@ -38,8 +38,8 @@ public class Game extends PApplet {
     // scoreView
     int scoreViewHeight = 110;
     int scoreViewWidth = 70;
-    
-    //BarChar
+
+    // BarChar
     int barChartHeight = 90;
 
     // rotation that we do
@@ -91,12 +91,14 @@ public class Game extends PApplet {
     ScoreView scoreView;
     BarChart barChart;
     HScrollbar scrollBar;
-    
+
     PShape tree;
 
     public void setup() {
         size(windowSize, windowSize, P2D);
-
+        if (frame != null) {
+            frame.setResizable(false);
+        }
         mover = new Mover(this);
         cylinder = new Cylinder(this);
 
@@ -112,7 +114,7 @@ public class Game extends PApplet {
     }
 
     public void draw() {
-        
+
         // ambient settings
         noStroke();
         view3D.draw();
