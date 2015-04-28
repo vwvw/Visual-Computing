@@ -29,14 +29,14 @@ public class TopView {
         surface.background(149, 215, 237);
         
         surface.fill(62, 142, 191);
-        /*
+        
         for (PVector v : previousBallLocation) {          
             surface.ellipse(v.x * topViewSize
                     / parent.lBoard + topViewSize / 2, v.z
                     * topViewSize / parent.lBoard + topViewSize / 2,
                     parent.ballRadius * topViewSize / parent.lBoard * 2,
                     parent.ballRadius * 2 * topViewSize / parent.lBoard);
-        }*/
+        }
         
         if(previousBallLocation.size() > 100){
             for(int i = 0; i < previousBallLocation.size() - 100; i++){
@@ -64,8 +64,8 @@ public class TopView {
         parent.image(surface, offsetLeft, parent.windowSize - dataVisual.size()
                 + (dataVisual.size() - topViewSize) / 2);
         
-        /*if(!parent.shiftMode){
+        if(!parent.shiftMode){
             previousBallLocation.add(parent.mover.ballLocation.get());        
-        }*/
+        }//*/
     }
 }
