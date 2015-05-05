@@ -11,43 +11,45 @@ public class ImageProcessing extends PApplet {
     public void setup() {
         m_image = loadImage("../../board1.jpg");
         size(m_image.width, m_image.height);
-        m_result = createImage(m_image.width, m_image.height, RGB);    
-        
+        m_result = createImage(m_image.width, m_image.height, RGB);
         /*
-        float[][] kernel1 = { { 0, 0, 0 }, { 0, 2, 0 }, { 0, 0, 0 } };
         float[][] kernel2 = { { 0, 1, 0 }, { 1, 0, 1 }, { 0, 1, 0 } };
-       
+        float[][] kernel1 = { { 0, 0, 0 }, { 0, 2, 0 }, { 0, 0, 0 } };
+        float weight = 2.f;
+
+        float[][] gaussian = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
+
         float[][] sobelV = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
         float[][] sobelH = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
         
-        float[][] gaussian = { { 90, 120, 90 }, { 120, 150, 120 },
-                 { 90, 120, 90 } };
-                 
-        float weight = 1.f;
+        m_result = blur(m_image, gaussian, 99);
         m_result = hueThreshold(m_image, 100, 140);
         m_result = brightnessBinaryThreshold(m_image, 123);
-        m_result = convolute(m_image, kernel1, weight);
-        m_result = blur(m_image, gaussian, 90);
+        m_result = convoluteGreyScale(m_image, kernel1, weight);
         m_result = sobel(m_image);
-         */ 
+        */
         m_result = edgeDetection(m_image);
     }
-                
 
     public void draw() {
         image(m_result, 0, 0);
     }
 
-    
-    public PImage edgeDetection(PImage image){
+    public PImage edgeDetection(PImage image) {
+        float[][] gaussian = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
 
         PImage result = createImage(width, height, RGB);
 
-        result = sobel(hueThreshold(saturationThreshold(reduceBrightnessThreshold(increaseBrightnessThreshold(m_image, 50), 180), 30, 220), 100,140));
+        result = sobel(hueThreshold(
+                saturationThreshold(
+                        reduceBrightnessThreshold(
+                                increaseBrightnessThreshold(
+                                        blur(m_image, gaussian, 99), 60), 190),
+                        60, 190), 80, 140));
 
         return result;
     }
-    
+
     public PImage sobel(PImage image) {
 
         // kernels for Sobel
@@ -97,16 +99,18 @@ public class ImageProcessing extends PApplet {
         return result;
     }
 
-    public PImage convolute(PImage image, float[][] kernel, float weight) {
+    public PImage convoluteGreyScale(PImage image, float[][] kernel,
+            float weight) {
 
         PImage result = createImage(image.width, image.height, ALPHA);
 
         for (int x = 1; x < image.width - 1; x++) {
             for (int y = 1; y < image.height - 1; y++) {
-                int sum = 0;
+                float sum = 0;
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
-                        sum += image.pixels[(y + j) * image.width + x + i]
+                        sum += brightness(image.pixels[(y + j) * image.width
+                                + x + i])
                                 * kernel[i + 1][j + 1] / weight;
                     }
                 }
@@ -117,7 +121,7 @@ public class ImageProcessing extends PApplet {
     }
 
     public PImage brightnessBinaryThreshold(PImage image, float threshold) {
-        PImage result = createImage(image.width, image.height, ALPHA);
+        PImage result = createImage(image.width, image.height, RGB);
 
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
@@ -128,34 +132,36 @@ public class ImageProcessing extends PApplet {
         }
         return result;
     }
-    
+
     public PImage reduceBrightnessThreshold(PImage image, float threshold) {
-        PImage result = createImage(image.width, image.height, ALPHA);
+        PImage result = createImage(image.width, image.height, RGB);
 
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (brightness(image.pixels[y
-                        * result.width + x]) > threshold) ? color(0) : image.pixels[y  * result.width + x];
+                        * result.width + x]) > threshold) ? color(0)
+                        : image.pixels[y * result.width + x];
             }
         }
         return result;
     }
-    
+
     public PImage increaseBrightnessThreshold(PImage image, float threshold) {
-        PImage result = createImage(image.width, image.height, ALPHA);
+        PImage result = createImage(image.width, image.height, RGB);
 
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (brightness(image.pixels[y
-                        * result.width + x]) < threshold) ? color(0) : image.pixels[y  * result.width + x];
+                        * result.width + x]) < threshold) ? color(0)
+                        : image.pixels[y * result.width + x];
             }
         }
         return result;
     }
-    
+
     public PImage saturationThreshold(PImage image, float lowerThreshold,
             float upperThreshold) {
-        PImage result = createImage(image.width, image.height, ALPHA);
+        PImage result = createImage(image.width, image.height, RGB);
 
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
@@ -168,10 +174,10 @@ public class ImageProcessing extends PApplet {
         }
         return result;
     }
-    
+
     public PImage hueThreshold(PImage image, float lowerThreshold,
             float upperThreshold) {
-        PImage result = createImage(image.width, image.height, ALPHA);
+        PImage result = createImage(image.width, image.height, RGB);
 
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
@@ -184,10 +190,10 @@ public class ImageProcessing extends PApplet {
         }
         return result;
     }
-    
+
     public PImage hueBinaryThreshold(PImage image, float lowerThreshold,
             float upperThreshold) {
-        PImage result = createImage(image.width, image.height, ALPHA);
+        PImage result = createImage(image.width, image.height, RGB);
 
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
@@ -199,29 +205,35 @@ public class ImageProcessing extends PApplet {
         }
         return result;
     }
-    
+
     public PImage blur(PImage image, float[][] kernel, float weight) {
         PImage result = createImage(image.width, image.height, RGB);
 
-        for (int x = 1; x < image.width-1; x++) {
-            for (int y = 1; y < image.height-1; y++) {
+        for (int i = 0; i < image.width; i++) {
+            result.pixels[i] = image.pixels[i];
+            result.pixels[image.width * (image.height - 1) + i] = image.pixels[i];
+        }
+
+        for (int x = 1; x < image.width - 1; x++) {
+            for (int y = 1; y < image.height - 1; y++) {
                 int r = 0;
                 int g = 0;
                 int b = 0;
                 for (int i = -1; i <= 1; i++) {
-                    for (int j = -1; j <= 1; j++) {         
-                        r += red(image.pixels[(y + j)*image.width + x + i]) * kernel[i+1][j+1] / weight;
-                        g += green(image.pixels[(y + j)*image.width + x + i]) * kernel[i+1][j+1] / weight;
-                        b += blue(image.pixels[(y + j)*image.width + x + i]) * kernel[i+1][j+1] / weight;
+                    for (int j = -1; j <= 1; j++) {
+                        r += (red(image.pixels[(y + j) * image.width + x + i]) / weight)
+                                * kernel[i + 1][j + 1];
+                        g += (green(image.pixels[(y + j) * image.width + x + i]) / weight)
+                                * kernel[i + 1][j + 1];
+                        b += (blue(image.pixels[(y + j) * image.width + x + i]) / weight)
+                                * kernel[i + 1][j + 1];
                     }
                 }
                 result.pixels[y * image.width + x] = color(r, g, b);
-            } 
+            }
 
         }
-
         return result;
-
     }
 
 }
