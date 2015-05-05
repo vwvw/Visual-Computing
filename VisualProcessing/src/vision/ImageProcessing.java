@@ -245,23 +245,12 @@ public class ImageProcessing extends PApplet {
 					// accumulator, and increment accordingly the accumulator.
 					for(int phiIndex = 0; phiIndex < phiDim; phiIndex++)
 					{
-						for(int rIndex = 0; rIndex<rDim; rIndex++)
-						{
-							if(rIndex*discretizationStepsR
-									==
-									x*Math.cos(phiIndex*discretizationStepsPhi)+y*Math.sin(phiIndex*discretizationStepsPhi))
-							{
-								accumulator[phiIndex * rDim + rIndex] += 1;
-							
-							}
-							println("e");
-						}	
+						int r =(int)(x*Math.cos(phiIndex*discretizationStepsPhi)+y*Math.sin(phiIndex*discretizationStepsPhi));
+						accumulator[phiIndex * rDim + r] += 1;
 					}
 				} 
 			}
-			
 		}
-		println("hello");
 		PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
 		for (int i = 0; i < accumulator.length; i++) {
 			houghImg.pixels[i] = color(min(255, accumulator[i]));
