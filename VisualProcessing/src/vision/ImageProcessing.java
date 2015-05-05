@@ -27,14 +27,12 @@ public class ImageProcessing extends PApplet {
         m_result = hueThreshold(m_image, 100, 140);
         m_result = brightnessBinaryThreshold(m_image, 123);
         m_result = convolute(m_image, kernel1, weight);
-        
         m_result = blur(m_image, gaussian, 90);
+        m_result = sobel(m_image);
          */ 
-       m_result = edgeDetection(m_image);
+        m_result = edgeDetection(m_image);
     }
-         
-         
-         
+                
 
     public void draw() {
         image(m_result, 0, 0);
@@ -45,7 +43,7 @@ public class ImageProcessing extends PApplet {
 
         PImage result = createImage(width, height, RGB);
 
-        result = sobel(hueThreshold(reduceBrightnessThreshold(increaseBrightnessThreshold(m_image, 50), 180), 117,135));
+        result = sobel(hueThreshold(saturationThreshold(reduceBrightnessThreshold(increaseBrightnessThreshold(m_image, 50), 180), 30, 220), 100,140));
 
         return result;
     }
@@ -112,7 +110,7 @@ public class ImageProcessing extends PApplet {
                                 * kernel[i + 1][j + 1] / weight;
                     }
                 }
-                result.pixels[y * image.width + x] = sum;
+                result.pixels[y * image.width + x] = color(sum);
             }
         }
         return result;
@@ -137,7 +135,7 @@ public class ImageProcessing extends PApplet {
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (brightness(image.pixels[y
-                        * result.width + x]) > threshold) ? color(threshold) : image.pixels[y  * result.width + x];
+                        * result.width + x]) > threshold) ? color(0) : image.pixels[y  * result.width + x];
             }
         }
         return result;
@@ -149,12 +147,28 @@ public class ImageProcessing extends PApplet {
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (brightness(image.pixels[y
-                        * result.width + x]) < threshold) ? color(threshold) : image.pixels[y  * result.width + x];
+                        * result.width + x]) < threshold) ? color(0) : image.pixels[y  * result.width + x];
             }
         }
         return result;
     }
+    
+    public PImage saturationThreshold(PImage image, float lowerThreshold,
+            float upperThreshold) {
+        PImage result = createImage(image.width, image.height, ALPHA);
 
+        for (int x = 0; x < image.width; x++) {
+            for (int y = 0; y < image.height; y++) {
+                result.pixels[y * result.width + x] = (saturation(image.pixels[y
+                        * result.width + x]) > lowerThreshold && saturation(image.pixels[y
+                        * result.width + x]) < upperThreshold) ? m_image.pixels[y
+                        * result.width + x]
+                        : color(0);
+            }
+        }
+        return result;
+    }
+    
     public PImage hueThreshold(PImage image, float lowerThreshold,
             float upperThreshold) {
         PImage result = createImage(image.width, image.height, ALPHA);
