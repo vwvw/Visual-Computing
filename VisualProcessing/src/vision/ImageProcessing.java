@@ -11,28 +11,29 @@ public class ImageProcessing extends PApplet {
     public void setup() {
         m_image = loadImage("../../board1.jpg");
         size(m_image.width, m_image.height);
-        m_result = createImage(m_image.width, m_image.height, RGB);
         /*
-        float[][] kernel2 = { { 0, 1, 0 }, { 1, 0, 1 }, { 0, 1, 0 } };
-        float[][] kernel1 = { { 0, 0, 0 }, { 0, 2, 0 }, { 0, 0, 0 } };
-        float weight = 2.f;
+         * float[][] kernel2 = { { 0, 1, 0 }, { 1, 0, 1 }, { 0, 1, 0 } };
+         * float[][] kernel1 = { { 0, 0, 0 }, { 0, 2, 0 }, { 0, 0, 0 } }; float
+         * weight = 2.f;
+         * 
+         * float[][] gaussian = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
+         * 
+         * float[][] sobelV = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
+         * float[][] sobelH = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
+         * 
+         * m_result = blur(m_image, gaussian, 99); m_result =
+         * hueThreshold(m_image, 100, 140); m_result =
+         * brightnessBinaryThreshold(m_image, 123); m_result =
+         * convoluteGreyScale(m_image, kernel1, weight); m_result =
+         * sobel(m_image); m_result = edgeDetection(m_image); m_result =
+         * edgeDetection(m_image);
+         */
 
-        float[][] gaussian = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
-
-        float[][] sobelV = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
-        float[][] sobelH = { { 0, 1, 0 }, { 0, 0, 0 }, { 0, -1, 0 } };
-        
-        m_result = blur(m_image, gaussian, 99);
-        m_result = hueThreshold(m_image, 100, 140);
-        m_result = brightnessBinaryThreshold(m_image, 123);
-        m_result = convoluteGreyScale(m_image, kernel1, weight);
-        m_result = sobel(m_image);
-        */
         m_result = edgeDetection(m_image);
     }
 
     public void draw() {
-        image(m_result, 0, 0);
+        hough(m_result);
     }
 
     public PImage edgeDetection(PImage image) {
@@ -40,13 +41,12 @@ public class ImageProcessing extends PApplet {
 
         PImage result = createImage(width, height, RGB);
 
-        result = sobel(hueThreshold(
+        result = sobel(hueBinaryThreshold(
                 saturationThreshold(
                         reduceBrightnessThreshold(
                                 increaseBrightnessThreshold(
-                                        blur(m_image, gaussian, 99), 60), 190),
-                        60, 190), 80, 140));
-
+                                        blur(m_image, gaussian, 99), 60), 150),
+                        85, 155), 110, 138));
         return result;
     }
 
@@ -89,7 +89,7 @@ public class ImageProcessing extends PApplet {
         // set pixel values according to sobel algorithm
         for (int y = 1; y < image.height - 2; y++) {
             for (int x = 1; x < image.width - 2; x++) {
-                if (buffer[y * image.width + x] > (int) (maxBuffer * 0.3f)) {
+                if (buffer[y * image.width + x] > Math.round(maxBuffer * 0.3f)) {
                     result.pixels[y * image.width + x] = color(255);
                 } else {
                     result.pixels[y * image.width + x] = color(0);
@@ -182,8 +182,8 @@ public class ImageProcessing extends PApplet {
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (hue(image.pixels[y
-                        * result.width + x]) > lowerThreshold && hue(image.pixels[y
-                        * result.width + x]) < upperThreshold) ? m_image.pixels[y
+                        * result.width + x]) >= lowerThreshold && hue(image.pixels[y
+                        * result.width + x]) <= upperThreshold) ? m_image.pixels[y
                         * result.width + x]
                         : color(0);
             }
@@ -236,4 +236,87 @@ public class ImageProcessing extends PApplet {
         return result;
     }
 
+    public void hough(PImage edgeImg) {
+        float discretizationStepsPhi = 0.06f;
+        float discretizationStepsR = 2.5f;
+        
+        // dimensions of the accumulator
+        int phiDim = Math.round(this.PI / discretizationStepsPhi);
+        int rDim = Math.round(((edgeImg.width + edgeImg.height) * 2 + 1) / discretizationStepsR);
+        
+        // our accumulator (with a 1 pix margin around)
+        int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
+        
+        // Fill the accumulator: on edge points (ie, white pixels of the edge //
+        // image), store all possible (r, phi) pairs describing lines going //
+        // through the point.
+        for (int y = 0; y < edgeImg.height; y++) {
+            for (int x = 0; x < edgeImg.width; x++) {
+                // Are we on an edge?
+                if (brightness(edgeImg.pixels[y * edgeImg.width + x]) != 0) {
+                    // ...determine here all the lines (r, phi) passing through
+                    // pixel (x,y), convert (r,phi) to coordinates in the
+                    // accumulator, and increment accordingly the accumulator.
+                    for (int phiIndex = 0; phiIndex < phiDim; phiIndex++) {
+                        float r = (x * cos(phiIndex * discretizationStepsPhi)/ discretizationStepsR +
+                                y* sin(phiIndex * discretizationStepsPhi)/ discretizationStepsR);
+                        int rInt = Math.round(((rDim - 1) / 2) + r);
+                        accumulator[((phiIndex+1) * (rDim+2) +  rInt)] += 1;
+                    }
+                }
+            }
+        }
+        PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
+        for (int i = 0; i < accumulator.length; i++) {
+            houghImg.pixels[i] = color(min(255, accumulator[i]));
+        }
+        houghImg.updatePixels();
+
+        image((m_image), 0, 0);
+
+        for (int idx = 0; idx < accumulator.length; idx++) {
+            if (accumulator[idx] > 200) {
+                // first, compute back the (r, phi) polar coordinates:
+                int accPhi = Math.round(idx / (rDim + 2)) - 1;
+                int accR = idx - (accPhi + 1) * (rDim + 2) - 1;
+                float r = (accR - (rDim - 1) * (float) 0.5)
+                        * (float) discretizationStepsR;
+                float phi = accPhi * discretizationStepsPhi;
+                // Cartesian equation of a line: y = ax + b
+                // in polar, y = (-cos(phi)/sin(phi))x + (r/sin(phi))
+                // => y = 0 : x = r / cos(phi)
+                // => x = 0 : y = r / sin(phi)
+                // compute the intersection of this line with the 4 borders of
+                // // the image
+                int x0 = 0;
+                int y0 = Math.round(r / sin(phi));
+                int x1 = Math.round(r / cos(phi));
+                int y1 = 0;
+                int x2 = edgeImg.width;
+                int y2 = Math.round(-cos(phi) / sin(phi) * x2 + r / sin(phi));
+                int y3 = edgeImg.width;
+                int x3 = Math.round(-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
+                // Finally, plot the lines
+                stroke(204, 102, 0);
+                // line(0,0,100, 100);
+                if (y0 > 0) {
+                    if (x1 > 0)
+                        line(x0, y0, x1, y1);
+                    else if (y2 > 0)
+                        line(x0, y0, x2, y2);
+                    else
+                        line(x0, y0, x3, y3);
+                } else {
+                    if (x1 > 0) {
+                        if (y2 > 0)
+                            line(x1, y1, x2, y2);
+                        else
+                            line(x1, y1, x3, y3);
+                    } else
+                        line(x2, y2, x3, y3);
+                }
+            }
+        }
+
+    }
 }
