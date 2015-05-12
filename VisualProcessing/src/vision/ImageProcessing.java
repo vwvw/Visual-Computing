@@ -9,7 +9,7 @@ public class ImageProcessing extends PApplet {
     private PImage m_result;
 
     public void setup() {
-        m_image = loadImage("../../board1.jpg");
+        m_image = loadImage("../../board4.jpg");
         size(m_image.width, m_image.height);
         /*
          * float[][] kernel2 = { { 0, 1, 0 }, { 1, 0, 1 }, { 0, 1, 0 } };
@@ -241,7 +241,7 @@ public class ImageProcessing extends PApplet {
         float discretizationStepsR = 2.5f;
         
         // dimensions of the accumulator
-        int phiDim = Math.round(this.PI / discretizationStepsPhi);
+        int phiDim = Math.round(PConstants.PI / discretizationStepsPhi);
         int rDim = Math.round(((edgeImg.width + edgeImg.height) * 2 + 1) / discretizationStepsR);
         
         // our accumulator (with a 1 pix margin around)
@@ -272,7 +272,7 @@ public class ImageProcessing extends PApplet {
         }
         houghImg.updatePixels();
 
-        image((m_image), 0, 0);
+        image((edgeImg), 0, 0);
 
         for (int idx = 0; idx < accumulator.length; idx++) {
             if (accumulator[idx] > 200) {
