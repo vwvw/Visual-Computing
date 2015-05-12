@@ -109,7 +109,7 @@ public class Game extends PApplet {
         barChart = new BarChart(this, barChartHeight);
         scrollBar = new HScrollbar(this, 0, 0, 10);
 
-        tree = loadShape("simpleTree.obj");
+        tree = loadShape("chateauBase12.obj");
         tree.scale(10);
     }
 
@@ -132,7 +132,6 @@ public class Game extends PApplet {
             view3D.getPGraphics().pushMatrix();
             view3D.getPGraphics().rotateX(PI / 2);
             view3D.getPGraphics().rotateZ(-PI / 2);
-
             if (cylinder.canPlaceCylinder()) {
                 PVector cyl = new PVector(map(mouseX, minXBoundariesCylinder,
                         maxXBoundariesCylinder, cylinderRadius, lBoard

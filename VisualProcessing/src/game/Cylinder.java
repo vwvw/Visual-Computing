@@ -3,6 +3,7 @@ import processing.core.*;
 
 public class Cylinder {
 
+	
     private Game parent;
 
     Cylinder(Game p) {
@@ -14,7 +15,8 @@ public class Cylinder {
 
         // position x : centre du cylindre par rapport à la plaque.
         // position y : centre du cylindre par rapport à la plaque.
-
+    	 
+    	
         float angle;
         float[] x = new float[parent.cylinderResolution + 1];
         float[] y = new float[parent.cylinderResolution + 1];
@@ -68,6 +70,8 @@ public class Cylinder {
         parent.completeCylinder.addChild(parent.cylinderTop);
         parent.completeCylinder.addChild(parent.cylinderBottom);
         return parent.completeCylinder;
+   
+		
     }
 
     public boolean canPlaceCylinder() {

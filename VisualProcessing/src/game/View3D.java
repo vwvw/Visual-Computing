@@ -73,9 +73,14 @@ public class View3D {
 
             // draw cylinder
             surface.pushMatrix();
-            surface.rotateX(Game.PI / 2);
+            //surface.rotateX(Game.PI / 2);
             for (int i = 0; i < parent.arrayCylinderShape.size(); i++) {
-                surface.shape(parent.arrayCylinderShape.get(i));
+                //surface.shape(parent.arrayCylinderShape.get(i));
+            	surface.pushMatrix();
+                surface.translate(parent.arrayCylinderPosition.get(i).x -parent.lBoard / 2, 0, parent.arrayCylinderPosition.get(i).y -parent.lBoard / 2);
+                surface.rotateX(Game.PI);
+                surface.shape(parent.tree);
+                surface.popMatrix();
             }
             surface.popMatrix();
 
