@@ -27,10 +27,9 @@ public class QuadGraph {
                     // fill the graph using intersect() to check if two lines
                     // are
                     // connected in the graph.
-                     
-                    
-                    //ON AVAIT CA : graph[idx] = new int[] { i, j };
-                    
+
+                    graph[idx][0]=i;
+                    graph[idx][1]=j;
                     idx++;
                 }
             }
@@ -72,6 +71,11 @@ public class QuadGraph {
                 findNewCycles(new int[] { graph[i][j] });
             }
         }
+        
+        for (int[] cy : new ArrayList<int[]>(cycles)) {
+            if (cy.length != 4) cycles.remove(cy);
+        }
+        
         for (int[] cy : cycles) {
             String s = "" + cy[0];
             for (int i = 1; i < cy.length; i++) {
@@ -83,27 +87,32 @@ public class QuadGraph {
     }
 
     void findNewCycles(int[] path) {
-        int n = path[0];
+        int n = path[0]; // dernier ligne visité
         int x;
-        int[] sub = new int[path.length + 1];
+        int[] sub = new int[path.length + 1]; // path augmenté d'un point
 
         for (int i = 0; i < graph.length; i++)
-            for (int y = 0; y <= 1; y++)
+            for (int y = 0; y < 2; y++)
                 if (graph[i][y] == n)
-                // edge refers to our current node
+               //le point est sur la denière ligne visitée
                 {
-                    x = graph[i][(y + 1) % 2];
-                    if (!visited(x, path))
-                    // neighbor node not on path yet
+                    x = graph[i][(y + 1) % 2];// l'autre ligne
+                    if (!visited(x, path)) // si elle est pas encore dans le
+                                           // graphe
                     {
-                        sub[0] = x;
-                        System.arraycopy(path, 0, sub, 1, path.length);
+                        sub[0] = x; // on la rajoute au début du graph augmenté
+                        System.arraycopy(path, 0, sub, 1, path.length); // on recopie la suite
                         // explore extended path
                         findNewCycles(sub);
-                        
-                        //ICI ON TESTAIT QUE PATH.LEGHTG == 4
-                    } else if ((path.length > 2)
-                            && (x == path[path.length - 1]))
+
+                        // ICI ON TESTAIT QUE PATH.LEGHTG == 4
+                    }
+                    // la ligne est déjà dans le path
+                    else if ((path.length ==  4) // plus de deux points
+                            && (x == path[path.length - 1])) // que le pont
+                                                             // trouvé est le
+                                                             // premeir du
+                                                             // chemin
                     // cycle found
                     {
                         int[] p = normalize(path);

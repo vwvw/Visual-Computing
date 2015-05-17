@@ -24,12 +24,12 @@ public class ImageProcessing extends PApplet {
     private QuadGraph quadGraph;
 
     public void setup() {
-        m_image = loadImage("../../board1.jpg");
+        m_image = loadImage("../../board2.jpg");
         size(m_image.width, m_image.height);
 
         float ang = 0;
         float inverseR = 1.f / discretizationStepsR;
-        int phiDim = Math.round(this.PI / discretizationStepsPhi);
+        int phiDim = Math.round(PApplet.PI / discretizationStepsPhi);
 
         tabSin = new float[phiDim];
         tabCos = new float[phiDim];
@@ -42,20 +42,20 @@ public class ImageProcessing extends PApplet {
         quadGraph = new QuadGraph();
 
         m_result = edgeDetection(m_image);
-        
-    }
-
-    public void draw() {
-        List<PVector> lines = hough(m_result, 10);
+        List<PVector> lines = hough(m_result, 6);
         List<PVector> intersections = getIntersections(lines);
-        quadGraph.build(lines, this.width, this.height);
 
 
         image(m_result, 0, 0);
         drawLines(lines);
         drawIntersections(intersections);
-        int[][] quads = quadGraph.graph;
-        //drawQuads(quads, lines);
+      
+        drawQuads(lines);
+        
+    }
+
+    public void draw() {
+        
 
     }
 
@@ -266,7 +266,7 @@ public class ImageProcessing extends PApplet {
         ArrayList<PVector> vectors = new ArrayList<>();
 
         // dimensions of the accumulator
-        int phiDim = Math.round(this.PI / discretizationStepsPhi);
+        int phiDim = Math.round(PApplet.PI / discretizationStepsPhi);
         int rDim = Math.round(((edgeImg.width + edgeImg.height) * 2 + 1)
                 / discretizationStepsR);
 
@@ -451,7 +451,9 @@ public class ImageProcessing extends PApplet {
     }
     
 
-    private void drawQuads(int[][] quads, List<PVector> lines) {
+    private void drawQuads(List<PVector> lines) {
+        quadGraph.build(lines, this.width, this.height);
+        List<int[]> quads= quadGraph.findCycles();
         for (int[] quad : quads) {
             PVector l1 = lines.get(quad[0]);
             PVector l2 = lines.get(quad[1]);
