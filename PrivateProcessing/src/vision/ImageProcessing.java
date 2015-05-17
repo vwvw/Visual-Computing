@@ -27,7 +27,7 @@ public class ImageProcessing extends PApplet {
     public void setup() {
 
         // PICK WHICH IMAGE YOU WANT HERE !
-        m_image = loadImage("../../board4.jpg");
+        m_image = loadImage("../../board1.jpg");
 
         size(m_image.width * 2 + 600, m_image.height);
 
@@ -479,9 +479,10 @@ public class ImageProcessing extends PApplet {
             // Choose a random, semi-transparent colour
             boolean isConvex = QuadGraph.isConvex(c12, c23, c34, c41);
             boolean validArea = QuadGraph.validArea(c12, c23, c34, c41,
-                    (float) (m_image.width * m_image.height * 4),
+                    (float) (m_image.width * m_image.height * 4), // yeah we know that 4 times the size of the image
+                    											//is big but your method is buggy ;-)
                     (float) (m_image.height * m_image.width * 0.2));
-            boolean nonFlatQuad = true;
+            boolean nonFlatQuad = true; //the method doesn't really work.
             if (!(isConvex && validArea && nonFlatQuad)) {
                 quads.remove(quad);
             }
