@@ -1,4 +1,4 @@
-package vision;
+package cs211.imageprocessing;
 
 import java.util.ArrayList;
 import java.util.Collections;
