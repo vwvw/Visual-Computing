@@ -27,7 +27,7 @@ public class ImageProcessing extends PApplet {
     public void setup() {
 
         // PICK WHICH IMAGE YOU WANT HERE !
-        m_image = loadImage("../../board1.jpg");
+        m_image = loadImage("../../board4.jpg");
 
         size(m_image.width * 2 + 600, m_image.height);
 
@@ -56,8 +56,7 @@ public class ImageProcessing extends PApplet {
         List<PVector> bestLines = linesForQuad(bestQuad, allLines);
         List<PVector> intersections = getIntersections(bestLines);
 
-     
-
+        //Code to draw Quads
         //List<int[]> tmp = new ArrayList<int[]>();
         // tmp.add(bestQuad);
         // drawQuads(tmp, bestLines);
@@ -483,6 +482,7 @@ public class ImageProcessing extends PApplet {
                     											//is big but your method is buggy ;-)
                     (float) (m_image.height * m_image.width * 0.2));
             boolean nonFlatQuad = true; //the method doesn't really work.
+            //it should be QuadGraph.nonFlatQuad(c12, c23, c34, c41);
             if (!(isConvex && validArea && nonFlatQuad)) {
                 quads.remove(quad);
             }
