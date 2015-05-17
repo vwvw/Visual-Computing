@@ -27,7 +27,7 @@ public class ImageProcessing extends PApplet {
     public void setup() {
 
         // PICK WHICH IMAGE YOU WANT HERE !
-        m_image = loadImage("../../board4.jpg");
+        m_image = loadImage("../../board1.jpg");
 
         size(m_image.width * 2 + 600, m_image.height);
 
