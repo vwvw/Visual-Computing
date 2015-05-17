@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-
-
 import processing.core.*;
 
 @SuppressWarnings("serial")
@@ -15,21 +13,31 @@ public class ImageProcessing extends PApplet {
 
     private PImage m_image;
     private PImage m_result;
+
     private float[] tabSin;
     private float[] tabCos;
 
-    private float discretizationStepsPhi = 0.06f;
-    private float discretizationStepsR = 2.5f;
-    
+    private final float discretizationStepsPhi = 0.06f;
+    private final float discretizationStepsR = 2.5f;
+
+    int[] accumulator;
+
     private QuadGraph quadGraph;
 
     public void setup() {
-        m_image = loadImage("../../board2.jpg");
-        size(m_image.width, m_image.height);
+
+        // PICK WHICH IMAGE YOU WANT HERE !
+        m_image = loadImage("../../board4.jpg");
+
+        size(m_image.width * 2 + 600, m_image.height);
+
+        m_result = edgeDetection(m_image);
 
         float ang = 0;
         float inverseR = 1.f / discretizationStepsR;
         int phiDim = Math.round(PApplet.PI / discretizationStepsPhi);
+        int rDim = Math.round(((m_image.width + m_image.height) * 2 + 1)
+                / discretizationStepsR);
 
         tabSin = new float[phiDim];
         tabCos = new float[phiDim];
@@ -38,39 +46,54 @@ public class ImageProcessing extends PApplet {
             tabSin[accPhi] = (float) (Math.sin(ang) * inverseR);
             tabCos[accPhi] = (float) (Math.cos(ang) * inverseR);
         }
-        
+
         quadGraph = new QuadGraph();
 
-        m_result = edgeDetection(m_image);
-        List<PVector> lines = hough(m_result, 6);
-        List<PVector> intersections = getIntersections(lines);
+        List<PVector> allLines = hough(m_result, 6);
+        List<int[]> quads = getQuads(allLines);
 
+        int[] bestQuad = getBestQuad(quads);
+        List<PVector> bestLines = linesForQuad(bestQuad, allLines);
+        List<PVector> intersections = getIntersections(bestLines);
 
-        image(m_result, 0, 0);
-        drawLines(lines);
-        drawIntersections(intersections);
-      
-        drawQuads(lines);
+     
+
+        //List<int[]> tmp = new ArrayList<int[]>();
+        // tmp.add(bestQuad);
+        // drawQuads(tmp, bestLines);
+
+        PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
+        for (int i = 0; i < accumulator.length; i++) {
+            houghImg.pixels[i] = color(min(255, accumulator[i]));
+        }
+        houghImg.resize(600, m_image.height);
+        houghImg.updatePixels();
         
+        image(m_image, 0, 0);
+        drawLines(bestLines);
+        drawIntersections(intersections);
+        image(houghImg, m_image.width, 0);
+        image(m_result, m_image.width + houghImg.width, 0);
+
     }
 
     public void draw() {
-        
-
+        // nothing done in real time
     }
 
     public PImage edgeDetection(PImage image) {
         float[][] gaussian = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
 
-        PImage result = createImage(width, height, RGB);
+        PImage tmp = createImage(image.width, image.height, RGB);
 
-        result = sobel(hueBinaryThreshold(
-                saturationThreshold(
-                        reduceBrightnessThreshold(
-                                increaseBrightnessThreshold(
-                                        blur(m_image, gaussian, 99), 60), 150),
-                        85, 155), 110, 138));
-        return result;
+        tmp = brightnessThreshold(image, 36, 171);
+        tmp = hueThreshold(tmp, 101, 134);
+        tmp = saturationThreshold(tmp, 86, 250);
+        tmp = blur(tmp, gaussian, 99);
+        tmp = intensityThreshImage(tmp);
+        tmp = sobel(tmp);
+
+        return tmp;
     }
 
     public PImage sobel(PImage image) {
@@ -143,40 +166,29 @@ public class ImageProcessing extends PApplet {
         return result;
     }
 
-    public PImage brightnessBinaryThreshold(PImage image, float threshold) {
+    public PImage intensityThreshImage(PImage image) {
         PImage result = createImage(image.width, image.height, RGB);
-
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (brightness(image.pixels[y
-                        * result.width + x]) > threshold) ? color(255)
-                        : color(0);
+                        * result.width + x]) > 0) ? color(255) : color(0);
             }
         }
         return result;
+
     }
 
-    public PImage reduceBrightnessThreshold(PImage image, float threshold) {
+    public PImage brightnessThreshold(PImage image, float lowerThreshold,
+            float upperThreshold) {
         PImage result = createImage(image.width, image.height, RGB);
 
         for (int x = 0; x < image.width; x++) {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (brightness(image.pixels[y
-                        * result.width + x]) > threshold) ? color(0)
-                        : image.pixels[y * result.width + x];
-            }
-        }
-        return result;
-    }
+                        * result.width + x]) > lowerThreshold && brightness(image.pixels[y
+                        * result.width + x]) < upperThreshold) ? image.pixels[y
+                        * result.width + x] : color(0);
 
-    public PImage increaseBrightnessThreshold(PImage image, float threshold) {
-        PImage result = createImage(image.width, image.height, RGB);
-
-        for (int x = 0; x < image.width; x++) {
-            for (int y = 0; y < image.height; y++) {
-                result.pixels[y * result.width + x] = (brightness(image.pixels[y
-                        * result.width + x]) < threshold) ? color(0)
-                        : image.pixels[y * result.width + x];
             }
         }
         return result;
@@ -190,9 +202,8 @@ public class ImageProcessing extends PApplet {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (saturation(image.pixels[y
                         * result.width + x]) > lowerThreshold && saturation(image.pixels[y
-                        * result.width + x]) < upperThreshold) ? m_image.pixels[y
-                        * result.width + x]
-                        : color(0);
+                        * result.width + x]) < upperThreshold) ? image.pixels[y
+                        * result.width + x] : color(0);
             }
         }
         return result;
@@ -206,7 +217,7 @@ public class ImageProcessing extends PApplet {
             for (int y = 0; y < image.height; y++) {
                 result.pixels[y * result.width + x] = (hue(image.pixels[y
                         * result.width + x]) >= lowerThreshold && hue(image.pixels[y
-                        * result.width + x]) <= upperThreshold) ? m_image.pixels[y
+                        * result.width + x]) <= upperThreshold) ? image.pixels[y
                         * result.width + x]
                         : color(0);
             }
@@ -271,7 +282,7 @@ public class ImageProcessing extends PApplet {
                 / discretizationStepsR);
 
         // our accumulator (with a 1 pix margin around)
-        int[] accumulator = new int[(phiDim + 2) * (rDim + 2)];
+        accumulator = new int[(phiDim + 2) * (rDim + 2)];
 
         // Fill the accumulator: on edge points (ie, white pixels of the edge //
         // image), store all possible (r, phi) pairs describing lines going //
@@ -371,10 +382,10 @@ public class ImageProcessing extends PApplet {
         };
     }
 
-    private void drawIntersections(List<PVector> lines) {
+    private void drawIntersections(List<PVector> intersections) {
         fill(255, 128, 0);
-        for (PVector line : lines) {
-            ellipse(line.x, line.y, 10, 10);
+        for (PVector intersection : intersections) {
+            ellipse(intersection.x, intersection.y, 10, 10);
         }
     }
 
@@ -399,9 +410,7 @@ public class ImageProcessing extends PApplet {
                 x /= d;
                 y /= d;
                 intersections.add(new PVector(x, y));
-                // draw the intersection
-                fill(255, 128, 0);
-                ellipse(x, y, 10, 10);
+
             }
         }
         return intersections;
@@ -416,9 +425,9 @@ public class ImageProcessing extends PApplet {
             int y0 = (int) (r / sin(phi));
             int x1 = (int) (r / cos(phi));
             int y1 = 0;
-            int x2 = this.width;
+            int x2 = m_image.width;
             int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
-            int y3 = this.width;
+            int y3 = m_image.width;
             int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
             // Finally, plot the lines
             stroke(204, 102, 0);
@@ -441,20 +450,21 @@ public class ImageProcessing extends PApplet {
 
         }
     }
-    
-    private PVector intersection(PVector line1, PVector line2){
+
+    private PVector intersection(PVector line1, PVector line2) {
         ArrayList<PVector> lines = new ArrayList<PVector>();
         lines.add(line1);
         lines.add(line2);
         ArrayList<PVector> intersections = getIntersections(lines);
         return intersections.get(0);
     }
-    
 
-    private void drawQuads(List<PVector> lines) {
-        quadGraph.build(lines, this.width, this.height);
-        List<int[]> quads= quadGraph.findCycles();
-        for (int[] quad : quads) {
+    private List<int[]> getQuads(List<PVector> lines) {
+        quadGraph.build(lines, m_image.width, m_image.height);
+        List<int[]> quads = quadGraph.findCycles();
+        List<int[]> quads2 = new ArrayList<int[]>(quads);
+
+        for (int[] quad : quads2) {
             PVector l1 = lines.get(quad[0]);
             PVector l2 = lines.get(quad[1]);
             PVector l3 = lines.get(quad[2]);
@@ -467,13 +477,55 @@ public class ImageProcessing extends PApplet {
             PVector c34 = intersection(l3, l4);
             PVector c41 = intersection(l4, l1);
             // Choose a random, semi-transparent colour
-            
+            boolean isConvex = QuadGraph.isConvex(c12, c23, c34, c41);
+            boolean validArea = QuadGraph.validArea(c12, c23, c34, c41,
+                    (float) (m_image.width * m_image.height * 4),
+                    (float) (m_image.height * m_image.width * 0.2));
+            boolean nonFlatQuad = true;
+            if (!(isConvex && validArea && nonFlatQuad)) {
+                quads.remove(quad);
+            }
+        }
+        return quads;
+    }
+
+    private void drawQuads(List<int[]> quads, List<PVector> lines) {
+        for (int[] quad : quads) {
+            PVector l1 = lines.get(quad[0]);
+            PVector l2 = lines.get(quad[1]);
+            PVector l3 = lines.get(quad[2]);
+            PVector l4 = lines.get(quad[3]);
+            // (intersection() is a simplified version of the
+            // intersections() method you wrote last week, that simply
+            // return the coordinates of the intersection between 2 lines)
+            PVector c12 = intersection(l1, l2);
+            PVector c23 = intersection(l2, l3);
+            PVector c34 = intersection(l3, l4);
+            PVector c41 = intersection(l4, l1);
             Random random = new Random();
             fill(color(min(255, random.nextInt(300)),
                     min(255, random.nextInt(300)),
                     min(255, random.nextInt(300)), 50));
             quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
         }
-
     }
+
+    private List<PVector> linesForQuad(int[] bestQuad, List<PVector> lines) {
+        List<PVector> tmp = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            tmp.add(lines.get(bestQuad[i]));
+        }
+        return tmp;
+    }
+
+    private int[] getBestQuad(List<int[]> quads) {
+        if (quads.size() == 0) {
+            throw new IllegalArgumentException(
+                    "There should be at least one QUAD");
+        }
+
+        // What did you think, that we actually did extra work ?
+        return quads.get(0);
+    }
+
 }

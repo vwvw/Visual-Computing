@@ -28,8 +28,7 @@ public class QuadGraph {
                     // are
                     // connected in the graph.
 
-                    graph[idx][0]=i;
-                    graph[idx][1]=j;
+                    graph[idx] = new int[] {i,j};
                     idx++;
                 }
             }
@@ -81,33 +80,33 @@ public class QuadGraph {
             for (int i = 1; i < cy.length; i++) {
                 s += "," + cy[i];
             }
-            System.out.println(s);
         }
         return cycles;
     }
 
     void findNewCycles(int[] path) {
-        int n = path[0]; // dernier ligne visité
+        int n = path[0]; // dernier point visité
         int x;
-        int[] sub = new int[path.length + 1]; // path augmenté d'un point
+        int[] sub = new int[path.length + 1]; // graphe augmenté d'un point
 
         for (int i = 0; i < graph.length; i++)
-            for (int y = 0; y < 2; y++)
+            for (int y = 0; y <= 1; y++)
                 if (graph[i][y] == n)
-               //le point est sur la denière ligne visitée
+                // edge refers to our current node
                 {
                     x = graph[i][(y + 1) % 2];// l'autre ligne
                     if (!visited(x, path)) // si elle est pas encore dans le
                                            // graphe
+                    // neighbor node not on path yet
                     {
                         sub[0] = x; // on la rajoute au début du graph augmenté
-                        System.arraycopy(path, 0, sub, 1, path.length); // on recopie la suite
+                        System.arraycopy(path, 0, sub, 1, path.length);
                         // explore extended path
                         findNewCycles(sub);
 
                         // ICI ON TESTAIT QUE PATH.LEGHTG == 4
                     }
-                    // la ligne est déjà dans le path
+                    // déjà visité
                     else if ((path.length ==  4) // plus de deux points
                             && (x == path[path.length - 1])) // que le pont
                                                              // trouvé est le
@@ -236,8 +235,7 @@ public class QuadGraph {
                 || (i1 < 0 && i2 < 0 && i3 < 0 && i4 < 0))
             return true;
         else
-            System.out.println("Eliminating non-convex quad");
-        return false;
+            return false;
 
     }
 
@@ -259,12 +257,8 @@ public class QuadGraph {
 
         float area = Math.abs(0.5f * (i1 + i2 + i3 + i4));
 
-        // System.out.println(area);
-
         boolean valid = (area < max_area && area > min_area);
 
-        if (!valid)
-            System.out.println("Area out of range");
 
         return valid;
     }
@@ -294,7 +288,6 @@ public class QuadGraph {
                 && cos4 < min_cos)
             return true;
         else {
-            System.out.println("Flat quad");
             return false;
         }
     }
