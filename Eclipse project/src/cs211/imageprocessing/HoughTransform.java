@@ -20,7 +20,7 @@ public class HoughTransform extends PApplet {
             for (int i = 0; i < cameras.length; i++) {
                 println(cameras[i]);
             }
-            cam = new Capture(this, cameras[0]);
+            cam = new Capture(this, cameras[1]);
             cam.start();
         }
     }

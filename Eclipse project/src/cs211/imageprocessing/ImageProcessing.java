@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import papaya.Mat;
 import processing.core.*;
 
 @SuppressWarnings("serial")
@@ -28,7 +27,7 @@ public class ImageProcessing extends PApplet {
 	public void setup() {
 
 		// PICK WHICH IMAGE YOU WANT HERE !
-		m_image = loadImage("../../board2.jpg");
+		m_image = loadImage("../../board4.jpg");
 
 		size(m_image.width, m_image.height);
 
@@ -42,7 +41,7 @@ public class ImageProcessing extends PApplet {
 
 		tabSin = new float[phiDim];
 		tabCos = new float[phiDim];
-
+		
 		for (int accPhi = 0; accPhi < phiDim; ang += discretizationStepsPhi, accPhi++) {
 			tabSin[accPhi] = (float) (Math.sin(ang) * inverseR);
 			tabCos[accPhi] = (float) (Math.cos(ang) * inverseR);
@@ -54,25 +53,11 @@ public class ImageProcessing extends PApplet {
 		List<int[]> quads = getQuads(allLines);
 
 		int[] bestQuad = getBestQuad(quads);
+		System.out.println(m_image.width + "   "+ m_image.height);
 		List<PVector> bestLines = linesForQuad(bestQuad, allLines);
 		List<PVector> intersections = getIntersections(bestLines);
 
-		//Code to draw Quads
-		//List<int[]> tmp = new ArrayList<int[]>();
-		// tmp.add(bestQuad);
-		// drawQuads(tmp, bestLines);
-		TwoDThreeD td = new TwoDThreeD(m_image.height, m_image.width);
-		PVector rot = td.get3DRotations(sortCorners(intersections));
-		System.out.println(rot);
-		rot.mult(180/PI);
-
-		{
-
-			System.out.println(rot.x);
-			System.out.println(rot.y);
-			System.out.println(rot.z);
-		}
-
+		// Code to draw Quads
 		PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
 		for (int i = 0; i < accumulator.length; i++) {
 			houghImg.pixels[i] = color(min(255, accumulator[i]));
@@ -83,6 +68,22 @@ public class ImageProcessing extends PApplet {
 		image(m_image, 0, 0);
 		drawLines(bestLines);
 		drawIntersections(intersections);
+
+		List<int[]> tmp = new ArrayList<int[]>();
+		tmp.add(bestQuad);
+		drawQuad(bestLines);
+		
+		TwoDThreeD td = new TwoDThreeD(m_image.height, m_image.width);
+		 PVector rot = td.get3DRotations(sortCorners(getIntersectionQuad(bestLines)));
+		 System.out.println(rot);
+		 rot.mult(180/PI);
+
+		 {
+
+		 System.out.println(rot.x);
+		 System.out.println(rot.y);
+		 System.out.println(rot.z);
+		 }
 
 	}
 
@@ -165,8 +166,8 @@ public class ImageProcessing extends PApplet {
 				for (int i = -1; i <= 1; i++) {
 					for (int j = -1; j <= 1; j++) {
 						sum += brightness(image.pixels[(y + j) * image.width
-						                               + x + i])
-						                               * kernel[i + 1][j + 1] / weight;
+								+ x + i])
+								* kernel[i + 1][j + 1] / weight;
 					}
 				}
 				result.pixels[y * image.width + x] = color(sum);
@@ -180,7 +181,7 @@ public class ImageProcessing extends PApplet {
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
 				result.pixels[y * result.width + x] = (brightness(image.pixels[y
-				                                                               * result.width + x]) > 0) ? color(255) : color(0);
+						* result.width + x]) > 0) ? color(255) : color(0);
 			}
 		}
 		return result;
@@ -194,9 +195,9 @@ public class ImageProcessing extends PApplet {
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
 				result.pixels[y * result.width + x] = (brightness(image.pixels[y
-				                                                               * result.width + x]) > lowerThreshold && brightness(image.pixels[y
-				                                                                                                                                * result.width + x]) < upperThreshold) ? image.pixels[y
-				                                                                                                                                                                                      * result.width + x] : color(0);
+						* result.width + x]) > lowerThreshold && brightness(image.pixels[y
+						* result.width + x]) < upperThreshold) ? image.pixels[y
+						* result.width + x] : color(0);
 
 			}
 		}
@@ -210,9 +211,9 @@ public class ImageProcessing extends PApplet {
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
 				result.pixels[y * result.width + x] = (saturation(image.pixels[y
-				                                                               * result.width + x]) > lowerThreshold && saturation(image.pixels[y
-				                                                                                                                                * result.width + x]) < upperThreshold) ? image.pixels[y
-				                                                                                                                                                                                      * result.width + x] : color(0);
+						* result.width + x]) > lowerThreshold && saturation(image.pixels[y
+						* result.width + x]) < upperThreshold) ? image.pixels[y
+						* result.width + x] : color(0);
 			}
 		}
 		return result;
@@ -225,10 +226,10 @@ public class ImageProcessing extends PApplet {
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
 				result.pixels[y * result.width + x] = (hue(image.pixels[y
-				                                                        * result.width + x]) >= lowerThreshold && hue(image.pixels[y
-				                                                                                                                   * result.width + x]) <= upperThreshold) ? image.pixels[y
-				                                                                                                                                                                          * result.width + x]
-				                                                                                                                                                                        		  : color(0);
+						* result.width + x]) >= lowerThreshold && hue(image.pixels[y
+						* result.width + x]) <= upperThreshold) ? image.pixels[y
+						* result.width + x]
+						: color(0);
 			}
 		}
 		return result;
@@ -241,9 +242,9 @@ public class ImageProcessing extends PApplet {
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
 				result.pixels[y * result.width + x] = (hue(image.pixels[y
-				                                                        * result.width + x]) > lowerThreshold && hue(image.pixels[y
-				                                                                                                                  * result.width + x]) < upperThreshold) ? color(255)
-				                                                                                                                		  : color(0);
+						* result.width + x]) > lowerThreshold && hue(image.pixels[y
+						* result.width + x]) < upperThreshold) ? color(255)
+						: color(0);
 			}
 		}
 		return result;
@@ -467,7 +468,28 @@ public class ImageProcessing extends PApplet {
 		ArrayList<PVector> intersections = getIntersections(lines);
 		return intersections.get(0);
 	}
-
+	
+	
+	private List<PVector> getIntersectionQuad(List<PVector> linesQuad){
+		PVector l1 = linesQuad.get(0);
+		PVector l2 = linesQuad.get(1);
+		PVector l3 = linesQuad.get(2);
+		PVector l4 = linesQuad.get(3);
+		// (intersection() is a simplified version of the
+		// intersections() method you wrote last week, that simply
+		// return the coordinates of the intersection between 2 lines)
+		List<PVector> intersections = new ArrayList<>();
+		PVector c12 = intersection(l1, l2);
+		PVector c23 = intersection(l2, l3);
+		PVector c34 = intersection(l3, l4);
+		PVector c41 = intersection(l4, l1);
+		intersections.add(c12);
+		intersections.add(c23);
+		intersections.add(c34);
+		intersections.add(c41);
+		
+		return intersections;
+	}
 	private List<int[]> getQuads(List<PVector> lines) {
 		quadGraph.build(lines, m_image.width, m_image.height);
 		List<int[]> quads = quadGraph.findCycles();
@@ -488,11 +510,19 @@ public class ImageProcessing extends PApplet {
 			// Choose a random, semi-transparent colour
 			boolean isConvex = QuadGraph.isConvex(c12, c23, c34, c41);
 			boolean validArea = QuadGraph.validArea(c12, c23, c34, c41,
-					(float) (m_image.width * m_image.height * 4), // yeah we know that 4 times the size of the image
-					//is big but your method is buggy ;-)
+					(float) (m_image.width * m_image.height * 4), // yeah we
+																	// know that
+																	// 4 times
+																	// the size
+																	// of the
+																	// image
+																	// is big
+																	// but your
+																	// method is
+																	// buggy ;-)
 					(float) (m_image.height * m_image.width * 0.2));
-			boolean nonFlatQuad = true; //the method doesn't really work.
-			//it should be QuadGraph.nonFlatQuad(c12, c23, c34, c41);
+			boolean nonFlatQuad = true; // the method doesn't really work.
+			// it should be QuadGraph.nonFlatQuad(c12, c23, c34, c41);
 			if (!(isConvex && validArea && nonFlatQuad)) {
 				quads.remove(quad);
 			}
@@ -500,25 +530,25 @@ public class ImageProcessing extends PApplet {
 		return quads;
 	}
 
-	private void drawQuads(List<int[]> quads, List<PVector> lines) {
-		for (int[] quad : quads) {
-			PVector l1 = lines.get(quad[0]);
-			PVector l2 = lines.get(quad[1]);
-			PVector l3 = lines.get(quad[2]);
-			PVector l4 = lines.get(quad[3]);
-			// (intersection() is a simplified version of the
-			// intersections() method you wrote last week, that simply
-			// return the coordinates of the intersection between 2 lines)
-			PVector c12 = intersection(l1, l2);
-			PVector c23 = intersection(l2, l3);
-			PVector c34 = intersection(l3, l4);
-			PVector c41 = intersection(l4, l1);
-			Random random = new Random();
-			fill(color(min(255, random.nextInt(300)),
-					min(255, random.nextInt(300)),
-					min(255, random.nextInt(300)), 50));
-			quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
-		}
+	private void drawQuad(List<PVector> lines) {
+
+		PVector l1 = lines.get(0);
+		PVector l2 = lines.get(1);
+		PVector l3 = lines.get(2);
+		PVector l4 = lines.get(3);
+		// (intersection() is a simplified version of the
+		// intersections() method you wrote last week, that simply
+		// return the coordinates of the intersection between 2 lines)
+		PVector c12 = intersection(l1, l2);
+		PVector c23 = intersection(l2, l3);
+		PVector c34 = intersection(l3, l4);
+		PVector c41 = intersection(l4, l1);
+		// Choose a random, semi-transparent colour
+		Random random = new Random();
+		fill(color(min(255, random.nextInt(300)),
+				min(255, random.nextInt(300)), min(255, random.nextInt(300)),
+				50));
+		quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
 	}
 
 	private List<PVector> linesForQuad(int[] bestQuad, List<PVector> lines) {
@@ -539,37 +569,41 @@ public class ImageProcessing extends PApplet {
 		return quads.get(0);
 	}
 
-	
-	public static Comparator<PVector> getCWComparator(PVector center){
+	public static Comparator<PVector> getCWComparator(PVector center) {
 		return new Comparator<PVector>() {
 
 			@Override
 			public int compare(PVector b, PVector d) {
-				 if(Math.atan2(b.y-center.y,b.x-center.x)<Math.atan2(d.y-center.y,d.x-center.x))
-					 return -1; 
-				 else return 1;
+				if (Math.atan2(b.y - center.y, b.x - center.x) < Math.atan2(d.y
+						- center.y, d.x - center.x))
+					return -1;
+				else
+					return 1;
 			}
 		};
 	}
-	public static List<PVector> sortCorners(List<PVector> quad){
+
+	public static List<PVector> sortCorners(List<PVector> quad) {
 		// Sort corners so that they are ordered clockwise
 		PVector a = quad.get(0);
 		PVector b = quad.get(2);
-		PVector center = new PVector((a.x+b.x)/2,(a.y+b.y)/2);
+		PVector center = new PVector((a.x + b.x) / 2, (a.y + b.y) / 2);
 		Collections.sort(quad, getCWComparator(center));
 		// TODO:
 		// Re-order the corners so that the first one is the closest to the
 		// origin (0,0) of the image.
 		//
 		// You can use Collections.rotate to shift the corners inside the quad.
-		PVector nearest = new PVector(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-		for (PVector v : quad)
-		{
-			if(v.dist( new PVector(0,0,0)) < nearest.dist( new PVector(0,0,0)))
+		PVector nearest = new PVector(Float.MAX_VALUE, Float.MAX_VALUE,
+				Float.MAX_VALUE);
+		for (PVector v : quad) {
+			if (v.dist(new PVector(0, 0, 0)) < nearest
+					.dist(new PVector(0, 0, 0)))
 				nearest = v;
 		}
-		Collections.rotate(quad, quad.indexOf(nearest));
-		return quad; }
+		System.out.println(quad);
+		Collections.rotate(quad, +quad.indexOf(nearest));
+		return quad;
+	}
 
 }
-
