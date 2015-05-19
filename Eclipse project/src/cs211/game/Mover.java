@@ -93,6 +93,9 @@ public class Mover {
                         - parent.lBoard / 2
                         + (parent.cylinderRadius + parent.ballRadius)
                         * (normal.z);
+                
+                parent.arrayCylinderPosition.remove(i); // when touched removed the cylinder from both arrays... 
+                parent.arrayCylinderShape.remove(i);
             }
         }
     }
