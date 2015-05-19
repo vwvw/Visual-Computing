@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="library/jogl-all-natives-windows-i586.jar"/>
 	<classpathentry kind="lib" path="library/jogl-all.jar"/>
 	<classpathentry kind="lib" path="library/video.jar"/>
+	<classpathentry kind="lib" path="library/papaya/library/papaya.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

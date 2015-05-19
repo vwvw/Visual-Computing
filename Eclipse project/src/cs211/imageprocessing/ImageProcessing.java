@@ -29,7 +29,7 @@ public class ImageProcessing extends PApplet {
         // PICK WHICH IMAGE YOU WANT HERE !
         m_image = loadImage("../../board1.jpg");
 
-        size(m_image.width * 2 + 600, m_image.height);
+        size(m_image.width, m_image.height);
 
         m_result = edgeDetection(m_image);
 
@@ -71,8 +71,6 @@ public class ImageProcessing extends PApplet {
         image(m_image, 0, 0);
         drawLines(bestLines);
         drawIntersections(intersections);
-        image(houghImg, m_image.width, 0);
-        image(m_result, m_image.width + houghImg.width, 0);
 
     }
 
