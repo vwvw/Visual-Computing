@@ -11,7 +11,7 @@ public class View3D {
     
     public View3D(Game p){
         parent = p;
-        surface = parent.createGraphics(parent.windowSize, parent.windowSize - parent.scoreBoardSize, Game.P3D);
+        surface = parent.createGraphics(parent.windowSizeHeight, parent.windowSizeHeight - parent.scoreBoardSize, Game.P3D);
     }
     
     public void draw(){
@@ -67,7 +67,7 @@ public class View3D {
             parent.mover.display();
             surface.popMatrix();
         } else { // not in shift mode
-            surface.camera(parent.windowSize / 2, -1, parent.windowSize / 2, parent.width / 2,
+            surface.camera(parent.windowSizeHeight / 2, -1, parent.windowSizeHeight / 2, parent.width / 2,
                     parent.height / 2, 0, 0, 1, 0);
             // we move the coodinates to have the board in the center of the
             // window
@@ -83,7 +83,7 @@ public class View3D {
             for (int i = 0; i < parent.arrayCylinderShape.size(); i++) {
                 //surface.shape(parent.arrayCylinderShape.get(i));
             	surface.pushMatrix();
-                surface.translate(parent.arrayCylinderPosition.get(i).x -parent.lBoard / 2, 0, parent.arrayCylinderPosition.get(i).y -parent.lBoard / 2);
+                surface.translate(parent.arrayCylinderPosition.get(i).x -parent.lBoard / 2, -parent.wBoard/2, parent.arrayCylinderPosition.get(i).y -parent.lBoard / 2);
                 surface.rotateX(Game.PI);
                 surface.shape(parent.tree);
                 surface.popMatrix();

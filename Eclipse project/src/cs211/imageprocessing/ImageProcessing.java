@@ -6,13 +6,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import cs211.game.Game;
 import processing.core.*;
+import processing.video.*;
+
 
 @SuppressWarnings("serial")
-public class ImageProcessing extends PApplet {
+public class ImageProcessing implements Runnable {
 
-	private PImage m_image;
-	private PImage m_result;
+	public PImage m_image;
+	public PImage m_result;
 
 	private float[] tabSin;
 	private float[] tabCos;
@@ -23,15 +26,34 @@ public class ImageProcessing extends PApplet {
 	int[] accumulator;
 
 	private QuadGraph quadGraph;
+	List<PVector> bestLines;
 
-	public void setup() {
+    private PApplet p;
+    
+    float rotX = 0;
+    float rotZ = 0;
+    public PVector angles = new PVector(0,0,0);
+    
+    Movie cam;
 
+
+	
+	public ImageProcessing(PApplet parent){
+	    p = parent;
+	}
+
+	public void setup(PImage img) {
+	    
+	    m_image = img;
+	    m_result = edgeDetection(m_image);
+	       
+	    
 		// PICK WHICH IMAGE YOU WANT HERE !
-		m_image = loadImage("../../board4.jpg");
+		//m_image = p.loadImage("../../board4.jpg");
 
-		size(m_image.width, m_image.height);
+		//size(m_image.width, m_image.height);
 
-		m_result = edgeDetection(m_image);
+		//m_result = edgeDetection(m_image);
 
 		float ang = 0;
 		float inverseR = 1.f / discretizationStepsR;
@@ -48,15 +70,17 @@ public class ImageProcessing extends PApplet {
 		}
 
 		quadGraph = new QuadGraph();
-
+		
+		/*
 		List<PVector> allLines = hough(m_result, 6);
 		List<int[]> quads = getQuads(allLines);
 
 		int[] bestQuad = getBestQuad(quads);
-		System.out.println(m_image.width + "   "+ m_image.height);
-		List<PVector> bestLines = linesForQuad(bestQuad, allLines);
+		//System.out.println(m_image.width + "   "+ m_image.height);
+		bestLines = linesForQuad(bestQuad, allLines);
 		List<PVector> intersections = getIntersections(bestLines);
-
+		
+		/*
 		// Code to draw Quads
 		PImage houghImg = createImage(rDim + 2, phiDim + 2, ALPHA);
 		for (int i = 0; i < accumulator.length; i++) {
@@ -71,20 +95,30 @@ public class ImageProcessing extends PApplet {
 
 		List<int[]> tmp = new ArrayList<int[]>();
 		tmp.add(bestQuad);
-		drawQuad(bestLines);
+		drawQuad(bestLines);*/
 		
-		TwoDThreeD td = new TwoDThreeD(m_image.height, m_image.width);
-		 PVector rot = td.get3DRotations(sortCorners(getIntersectionQuad(bestLines)));
-		 System.out.println(rot);
-		 rot.mult(180/PI);
 
-		 {
-
-		 System.out.println(rot.x);
-		 System.out.println(rot.y);
-		 System.out.println(rot.z);
-		 }
-
+	
+	}
+	
+	public void getAngles(){
+	    
+	    m_result = edgeDetection(m_image);
+	    List<PVector> allLines = hough(m_result, 6);
+        List<int[]> quads = getQuads(allLines);
+        if(quads.isEmpty()){
+            return;
+        }
+        
+        int[] bestQuad = getBestQuad(quads);
+        //System.out.println(m_image.width + "   "+ m_image.height);
+        bestLines = linesForQuad(bestQuad, allLines);
+	    TwoDThreeD td = new TwoDThreeD(m_image.width, m_image.height);
+        PVector rot = td.get3DRotations(sortCorners(getIntersectionQuad(bestLines)));
+        rot.mult(180/PConstants.PI);
+        angles.x = (float) Math.toRadians(rot.x);
+        angles.y = (float) Math.toRadians(rot.y);
+        
 	}
 
 	public void draw() {
@@ -92,9 +126,10 @@ public class ImageProcessing extends PApplet {
 	}
 
 	public PImage edgeDetection(PImage image) {
+	    
 		float[][] gaussian = { { 9, 12, 9 }, { 12, 15, 12 }, { 9, 12, 9 } };
 
-		PImage tmp = createImage(image.width, image.height, RGB);
+		PImage tmp = p.createImage(image.width, image.height, PConstants.RGB);
 
 		tmp = brightnessThreshold(image, 36, 171);
 		tmp = hueThreshold(tmp, 101, 134);
@@ -113,13 +148,13 @@ public class ImageProcessing extends PApplet {
 		int[][] kernelV = { { 0, 0, 0 }, { 1, 0, -1 }, { 0, 0, 0 } };
 
 		// initialize result image
-		PImage result = createImage(image.width, image.height, RGB);
+		PImage result = p.createImage(image.width, image.height, PConstants.RGB);
 		for (int i = 0; i < result.width * result.height; i++) {
-			result.pixels[i] = color(0);
+			result.pixels[i] = p.color(0);
 		}
 
 		// initialize buffer and the it's Max
-		float maxBuffer = MIN_FLOAT;
+		float maxBuffer = PConstants.MIN_FLOAT;
 		float[] buffer = new float[result.width * result.height];
 
 		// sobel algorithm
@@ -146,9 +181,9 @@ public class ImageProcessing extends PApplet {
 		for (int y = 1; y < image.height - 2; y++) {
 			for (int x = 1; x < image.width - 2; x++) {
 				if (buffer[y * image.width + x] > Math.round(maxBuffer * 0.3f)) {
-					result.pixels[y * image.width + x] = color(255);
+					result.pixels[y * image.width + x] = p.color(255);
 				} else {
-					result.pixels[y * image.width + x] = color(0);
+					result.pixels[y * image.width + x] = p.color(0);
 				}
 			}
 		}
@@ -158,30 +193,30 @@ public class ImageProcessing extends PApplet {
 	public PImage convoluteGreyScale(PImage image, float[][] kernel,
 			float weight) {
 
-		PImage result = createImage(image.width, image.height, ALPHA);
+		PImage result = p.createImage(image.width, image.height, PConstants.ALPHA);
 
 		for (int x = 1; x < image.width - 1; x++) {
 			for (int y = 1; y < image.height - 1; y++) {
 				float sum = 0;
 				for (int i = -1; i <= 1; i++) {
 					for (int j = -1; j <= 1; j++) {
-						sum += brightness(image.pixels[(y + j) * image.width
+						sum += p.brightness(image.pixels[(y + j) * image.width
 								+ x + i])
 								* kernel[i + 1][j + 1] / weight;
 					}
 				}
-				result.pixels[y * image.width + x] = color(sum);
+				result.pixels[y * image.width + x] = p.color(sum);
 			}
 		}
 		return result;
 	}
 
 	public PImage intensityThreshImage(PImage image) {
-		PImage result = createImage(image.width, image.height, RGB);
+		PImage result = p.createImage(image.width, image.height, PConstants.RGB);
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
-				result.pixels[y * result.width + x] = (brightness(image.pixels[y
-						* result.width + x]) > 0) ? color(255) : color(0);
+				result.pixels[y * result.width + x] = (p.brightness(image.pixels[y
+						* result.width + x]) > 0) ? p.color(255) : p.color(0);
 			}
 		}
 		return result;
@@ -190,14 +225,14 @@ public class ImageProcessing extends PApplet {
 
 	public PImage brightnessThreshold(PImage image, float lowerThreshold,
 			float upperThreshold) {
-		PImage result = createImage(image.width, image.height, RGB);
+		PImage result = p.createImage(image.width, image.height, PConstants.RGB);
 
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
-				result.pixels[y * result.width + x] = (brightness(image.pixels[y
-						* result.width + x]) > lowerThreshold && brightness(image.pixels[y
+				result.pixels[y * result.width + x] = (p.brightness(image.pixels[y
+						* result.width + x]) > lowerThreshold && p.brightness(image.pixels[y
 						* result.width + x]) < upperThreshold) ? image.pixels[y
-						* result.width + x] : color(0);
+						* result.width + x] : p.color(0);
 
 			}
 		}
@@ -206,14 +241,14 @@ public class ImageProcessing extends PApplet {
 
 	public PImage saturationThreshold(PImage image, float lowerThreshold,
 			float upperThreshold) {
-		PImage result = createImage(image.width, image.height, RGB);
+		PImage result = p.createImage(image.width, image.height, PConstants.RGB);
 
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
-				result.pixels[y * result.width + x] = (saturation(image.pixels[y
-						* result.width + x]) > lowerThreshold && saturation(image.pixels[y
+				result.pixels[y * result.width + x] = (p.saturation(image.pixels[y
+						* result.width + x]) > lowerThreshold && p.saturation(image.pixels[y
 						* result.width + x]) < upperThreshold) ? image.pixels[y
-						* result.width + x] : color(0);
+						* result.width + x] : p.color(0);
 			}
 		}
 		return result;
@@ -221,15 +256,15 @@ public class ImageProcessing extends PApplet {
 
 	public PImage hueThreshold(PImage image, float lowerThreshold,
 			float upperThreshold) {
-		PImage result = createImage(image.width, image.height, RGB);
+		PImage result = p.createImage(image.width, image.height, PConstants.RGB);
 
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
-				result.pixels[y * result.width + x] = (hue(image.pixels[y
-						* result.width + x]) >= lowerThreshold && hue(image.pixels[y
+				result.pixels[y * result.width + x] = (p.hue(image.pixels[y
+						* result.width + x]) >= lowerThreshold && p.hue(image.pixels[y
 						* result.width + x]) <= upperThreshold) ? image.pixels[y
 						* result.width + x]
-						: color(0);
+						: p.color(0);
 			}
 		}
 		return result;
@@ -237,21 +272,21 @@ public class ImageProcessing extends PApplet {
 
 	public PImage hueBinaryThreshold(PImage image, float lowerThreshold,
 			float upperThreshold) {
-		PImage result = createImage(image.width, image.height, RGB);
+		PImage result = p.createImage(image.width, image.height, PConstants.RGB);
 
 		for (int x = 0; x < image.width; x++) {
 			for (int y = 0; y < image.height; y++) {
-				result.pixels[y * result.width + x] = (hue(image.pixels[y
-						* result.width + x]) > lowerThreshold && hue(image.pixels[y
-						* result.width + x]) < upperThreshold) ? color(255)
-						: color(0);
+				result.pixels[y * result.width + x] = (p.hue(image.pixels[y
+						* result.width + x]) > lowerThreshold && p.hue(image.pixels[y
+						* result.width + x]) < upperThreshold) ? p.color(255)
+						: p.color(0);
 			}
 		}
 		return result;
 	}
 
 	public PImage blur(PImage image, float[][] kernel, float weight) {
-		PImage result = createImage(image.width, image.height, RGB);
+		PImage result = p.createImage(image.width, image.height, PConstants.RGB);
 
 		for (int i = 0; i < image.width; i++) {
 			result.pixels[i] = image.pixels[i];
@@ -265,15 +300,15 @@ public class ImageProcessing extends PApplet {
 				int b = 0;
 				for (int i = -1; i <= 1; i++) {
 					for (int j = -1; j <= 1; j++) {
-						r += (red(image.pixels[(y + j) * image.width + x + i]) / weight)
+						r += (p.red(image.pixels[(y + j) * image.width + x + i]) / weight)
 								* kernel[i + 1][j + 1];
-						g += (green(image.pixels[(y + j) * image.width + x + i]) / weight)
+						g += (p.green(image.pixels[(y + j) * image.width + x + i]) / weight)
 								* kernel[i + 1][j + 1];
-						b += (blue(image.pixels[(y + j) * image.width + x + i]) / weight)
+						b += (p.blue(image.pixels[(y + j) * image.width + x + i]) / weight)
 								* kernel[i + 1][j + 1];
 					}
 				}
-				result.pixels[y * image.width + x] = color(r, g, b);
+				result.pixels[y * image.width + x] = p.color(r, g, b);
 			}
 
 		}
@@ -300,7 +335,7 @@ public class ImageProcessing extends PApplet {
 		for (int y = 0; y < edgeImg.height; y++) {
 			for (int x = 0; x < edgeImg.width; x++) {
 				// Are we on an edge?
-				if (brightness(edgeImg.pixels[y * edgeImg.width + x]) != 0) {
+				if (p.brightness(edgeImg.pixels[y * edgeImg.width + x]) != 0) {
 					// ...determine here all the lines (r, phi) passing through
 					// pixel (x,y), convert (r,phi) to coordinates in the
 					// accumulator, and increment accordingly the accumulator.
@@ -392,10 +427,10 @@ public class ImageProcessing extends PApplet {
 		};
 	}
 
-	private void drawIntersections(List<PVector> intersections) {
-		fill(255, 128, 0);
+	public void drawIntersections(List<PVector> intersections) {
+	    p.fill(255, 128, 0);
 		for (PVector intersection : intersections) {
-			ellipse(intersection.x, intersection.y, 10, 10);
+		    p.ellipse(intersection.x, intersection.y, 10, 10);
 		}
 	}
 
@@ -426,42 +461,42 @@ public class ImageProcessing extends PApplet {
 		return intersections;
 	}
 
-	private void drawLines(List<PVector> lines) {
+	public void drawLines(List<PVector> lines) {
 		for (PVector line : lines) {
 			float r = line.x;
 			float phi = line.y;
 
 			int x0 = 0;
-			int y0 = (int) (r / sin(phi));
-			int x1 = (int) (r / cos(phi));
+			int y0 = (int) (r / PApplet.sin(phi));
+			int x1 = (int) (r / PApplet.cos(phi));
 			int y1 = 0;
 			int x2 = m_image.width;
-			int y2 = (int) (-cos(phi) / sin(phi) * x2 + r / sin(phi));
+			int y2 = (int) (-PApplet.cos(phi) / PApplet.sin(phi) * x2 + r / PApplet.sin(phi));
 			int y3 = m_image.width;
-			int x3 = (int) (-(y3 - r / sin(phi)) * (sin(phi) / cos(phi)));
+			int x3 = (int) (-(y3 - r / PApplet.sin(phi)) * (PApplet.sin(phi) / PApplet.cos(phi)));
 			// Finally, plot the lines
-			stroke(204, 102, 0);
+			p.stroke(204, 102, 0);
 			if (y0 > 0) {
 				if (x1 > 0)
-					line(x0, y0, x1, y1);
+				    p.line(x0, y0, x1, y1);
 				else if (y2 > 0)
-					line(x0, y0, x2, y2);
+				    p.line(x0, y0, x2, y2);
 				else
-					line(x0, y0, x3, y3);
+				    p.line(x0, y0, x3, y3);
 			} else {
 				if (x1 > 0) {
 					if (y2 > 0)
-						line(x1, y1, x2, y2);
+					    p.line(x1, y1, x2, y2);
 					else
-						line(x1, y1, x3, y3);
+					    p.line(x1, y1, x3, y3);
 				} else
-					line(x2, y2, x3, y3);
+				    p.line(x2, y2, x3, y3);
 			}
 
 		}
 	}
 
-	private PVector intersection(PVector line1, PVector line2) {
+	public PVector intersection(PVector line1, PVector line2) {
 		ArrayList<PVector> lines = new ArrayList<PVector>();
 		lines.add(line1);
 		lines.add(line2);
@@ -470,7 +505,7 @@ public class ImageProcessing extends PApplet {
 	}
 	
 	
-	private List<PVector> getIntersectionQuad(List<PVector> linesQuad){
+	public List<PVector> getIntersectionQuad(List<PVector> linesQuad){
 		PVector l1 = linesQuad.get(0);
 		PVector l2 = linesQuad.get(1);
 		PVector l3 = linesQuad.get(2);
@@ -490,7 +525,8 @@ public class ImageProcessing extends PApplet {
 		
 		return intersections;
 	}
-	private List<int[]> getQuads(List<PVector> lines) {
+	
+	public List<int[]> getQuads(List<PVector> lines) {
 		quadGraph.build(lines, m_image.width, m_image.height);
 		List<int[]> quads = quadGraph.findCycles();
 		List<int[]> quads2 = new ArrayList<int[]>(quads);
@@ -530,7 +566,7 @@ public class ImageProcessing extends PApplet {
 		return quads;
 	}
 
-	private void drawQuad(List<PVector> lines) {
+	public void drawQuad(List<PVector> lines) {
 
 		PVector l1 = lines.get(0);
 		PVector l2 = lines.get(1);
@@ -545,13 +581,13 @@ public class ImageProcessing extends PApplet {
 		PVector c41 = intersection(l4, l1);
 		// Choose a random, semi-transparent colour
 		Random random = new Random();
-		fill(color(min(255, random.nextInt(300)),
-				min(255, random.nextInt(300)), min(255, random.nextInt(300)),
+		p.fill(p.color(PApplet.min(255, random.nextInt(300)),
+		        PApplet.min(255, random.nextInt(300)), PApplet.min(255, random.nextInt(300)),
 				50));
-		quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
+		p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
 	}
 
-	private List<PVector> linesForQuad(int[] bestQuad, List<PVector> lines) {
+	public List<PVector> linesForQuad(int[] bestQuad, List<PVector> lines) {
 		List<PVector> tmp = new ArrayList<>();
 		for (int i = 0; i < 4; i++) {
 			tmp.add(lines.get(bestQuad[i]));
@@ -559,7 +595,7 @@ public class ImageProcessing extends PApplet {
 		return tmp;
 	}
 
-	private int[] getBestQuad(List<int[]> quads) {
+	public int[] getBestQuad(List<int[]> quads) {
 		if (quads.size() == 0) {
 			throw new IllegalArgumentException(
 					"There should be at least one QUAD");
@@ -601,9 +637,14 @@ public class ImageProcessing extends PApplet {
 					.dist(new PVector(0, 0, 0)))
 				nearest = v;
 		}
-		System.out.println(quad);
+		//System.out.println(quad);
 		Collections.rotate(quad, +quad.indexOf(nearest));
 		return quad;
 	}
+
+    @Override
+    public void run() {
+      this.getAngles();
+    }
 
 }
