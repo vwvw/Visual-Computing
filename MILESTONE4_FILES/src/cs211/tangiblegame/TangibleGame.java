@@ -101,7 +101,7 @@ public class TangibleGame extends PApplet {
     ImageProcessing imageProcessor;
     
     Thread process;
-    Thread thingProcess;
+
     
     boolean firstTime = true;
     PImage m_image;
@@ -112,14 +112,14 @@ public class TangibleGame extends PApplet {
         m.read();
     }
     public void setup() {
-        this.frameRate(60);
+        //this.frameRate(60);
         size(windowSizeWidth , windowSizeHeight, P2D);
         if (frame != null) {
             frame.setResizable(false);
         }
         
         
-        cam = new Movie(this, "../../testvideo.mp4");     
+        cam = new Movie(this, "../../testvideo.mp4");   
         cam.loop(); 
         
   
@@ -138,6 +138,7 @@ public class TangibleGame extends PApplet {
         tree.scale(6.2f);
         
         imageProcessor = new ImageProcessing(this);
+        process = new Thread(imageProcessor);
         
     }
 
@@ -157,7 +158,7 @@ public class TangibleGame extends PApplet {
 
         
         //thingProcess.start();
-        //process.run();
+        process.run();
         
         
         /*
@@ -190,23 +191,27 @@ public class TangibleGame extends PApplet {
        
         
         m_image = cam.get();
+
         if(m_image.width != 0){
-           m_image.resize(160, 120);
+            m_image.resize(160, 120);
         }
         image(m_image, 0,0);
-        imageProcessor.getAngles();
-
-        /*
+        
+        
         try {
             process.join();
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }*/
+        }
+        imageProcessor.drawQuadRunner();
         
-     
-        rotX = (1 / 3f) *(imageProcessor.angles.x + 2 * rotX);
-        rotZ = (1 / 3f) *(-imageProcessor.angles.y + 2 * rotZ);
+        if(abs(imageProcessor.angles.x - rotX) < PI /2){
+            rotX = (1 / 3f) *(imageProcessor.angles.x + 2 * rotX);
+        }
+         if(abs(-imageProcessor.angles.y - rotZ) < PI /2){
+             rotZ = (1 / 3f) *(-imageProcessor.angles.y + 2 * rotZ);
+        }
 
         if (rotX > PI / 3)
             rotX = PI / 3;
@@ -216,7 +221,7 @@ public class TangibleGame extends PApplet {
             rotZ = PI / 3;
         if (rotZ < -PI / 3)
             rotZ = -PI / 3;
-        
+        fill(0, 0,0);
         text("Press SHIFT to add obstacles !", 180,
                 10);
     }
