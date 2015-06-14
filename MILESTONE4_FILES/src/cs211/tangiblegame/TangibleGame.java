@@ -207,11 +207,11 @@ public class TangibleGame extends PApplet {
         imageProcessor.drawQuadRunner();
         
         if(abs(imageProcessor.angles.x - rotX) < PI /2){
-            rotX = (1 / 3f) *(imageProcessor.angles.x + 2 * rotX);
-        }
-         if(abs(-imageProcessor.angles.y - rotZ) < PI /2){
-             rotZ = (1 / 3f) *(-imageProcessor.angles.y + 2 * rotZ);
-        }
+            rotX = (1 / 10f) *(imageProcessor.angles.x + 9 * rotX);
+            }
+            if(abs(-imageProcessor.angles.y - rotZ) < PI /2){
+            rotZ = (1 / 10f) *(-imageProcessor.angles.y + 9 * rotZ);
+            }
 
         if (rotX > PI / 3)
             rotX = PI / 3;
