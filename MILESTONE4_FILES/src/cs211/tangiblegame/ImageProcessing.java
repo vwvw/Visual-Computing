@@ -13,6 +13,9 @@ import processing.video.*;
 @SuppressWarnings("serial")
 public class ImageProcessing implements Runnable {
 
+    
+    //DONE THIS PROJECT 
+    //TOP KEK M8
 	public PImage m_image;
 	public PImage m_result;
 
