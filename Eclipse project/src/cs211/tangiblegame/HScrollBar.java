@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
@@ -16,7 +16,7 @@ class HScrollbar {
   boolean mouseOver;  //Is the mouse over the slider?
   boolean locked;     //Is the mouse clicking and dragging the slider now?
 
-  Game parent; 
+  TangibleGame parent; 
   
   PGraphics surface;
   
@@ -28,7 +28,7 @@ class HScrollbar {
    * @param w The width of the bar in pixels
    * @param h The height of the bar in pixels
    */
-  HScrollbar (Game p, float x, float y, int h) {
+  HScrollbar (TangibleGame p, float x, float y, int h) {
     parent = p;
     int width = parent.windowSizeHeight - (int)(parent.offsetLeft)*4 - parent.topViewSize - parent.scoreViewWidth;
     barWidth = width;

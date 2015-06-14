@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import processing.event.MouseEvent;
 import processing.video.Capture;
@@ -7,11 +7,10 @@ import processing.video.Movie;
 import java.util.ArrayList;
 import java.util.List;
 
-import cs211.imageprocessing.ImageProcessing;
 import processing.core.*;
 
 @SuppressWarnings("serial")
-public class Game extends PApplet {
+public class TangibleGame extends PApplet {
 
     // processing convention
 
@@ -68,7 +67,7 @@ public class Game extends PApplet {
 
     // movement attributes
     PVector gravityForce = new PVector(0, 0, 0);
-    float gravityConstant = 0.3f;
+    float gravityConstant = 0.9f;
     Mover mover;
 
     // cylinder declaration
@@ -98,19 +97,22 @@ public class Game extends PApplet {
 
     PShape tree;
     
-    Movie cam;
+    public Movie cam;
     ImageProcessing imageProcessor;
     
     Thread process;
+    Thread thingProcess;
     
     boolean firstTime = true;
+    PImage m_image;
+    PImage m_result;
     
+  
     public void movieEvent(Movie m) {
         m.read();
     }
-    
     public void setup() {
-        
+        this.frameRate(60);
         size(windowSizeWidth , windowSizeHeight, P2D);
         if (frame != null) {
             frame.setResizable(false);
@@ -136,7 +138,6 @@ public class Game extends PApplet {
         tree.scale(6.2f);
         
         imageProcessor = new ImageProcessing(this);
-         process = new Thread(imageProcessor);
         
     }
 
@@ -153,8 +154,8 @@ public class Game extends PApplet {
            
         noStroke();
 
-        PImage tmp = cam.get();
-        imageProcessor.m_image = tmp;
+        
+        //thingProcess.start();
         //process.run();
         
         
@@ -178,21 +179,22 @@ public class Game extends PApplet {
         
         view3D.draw();
         dataVisual.draw();
-        /*
+        
         topView.draw(offsetLeft);
         scoreView.draw();
         barChart.draw();
         scrollBar.update();
-        scrollBar.display();*/
+        scrollBar.display();
         
        
-       
-
-
-        if(tmp.width != 0){
-           tmp.resize(160, 120);
+        
+        m_image = cam.get();
+        if(m_image.width != 0){
+           m_image.resize(160, 120);
         }
-        image(tmp, 0,0);
+        image(m_image, 0,0);
+        imageProcessor.getAngles();
+
         /*
         try {
             process.join();
@@ -201,8 +203,9 @@ public class Game extends PApplet {
             e.printStackTrace();
         }*/
         
-        //rotX = imageProcessor.angles.x;
-        //rotZ = -imageProcessor.angles.y;
+     
+        rotX = (1 / 3f) *(imageProcessor.angles.x + 2 * rotX);
+        rotZ = (1 / 3f) *(-imageProcessor.angles.y + 2 * rotZ);
 
         if (rotX > PI / 3)
             rotX = PI / 3;

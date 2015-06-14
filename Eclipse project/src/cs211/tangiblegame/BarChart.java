@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import java.util.ArrayList;
 
@@ -7,7 +7,7 @@ import processing.core.PGraphics;
 
 public class BarChart {
     
-    private Game parent;
+    private TangibleGame parent;
     int timeInSecs;
     PGraphics surface;
     int height; 
@@ -15,7 +15,7 @@ public class BarChart {
     ArrayList<Integer> scores;
     
     
-    public BarChart(Game p, int barChartHeight){
+    public BarChart(TangibleGame p, int barChartHeight){
         parent = p;
         timeInSecs = PApplet.second();
         height = barChartHeight;

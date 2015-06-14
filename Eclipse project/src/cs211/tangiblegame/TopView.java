@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import java.util.LinkedList;
 
@@ -8,16 +8,16 @@ import processing.core.PVector;
 public class TopView {
 
     private PGraphics surface;
-    private Game parent;
+    private TangibleGame parent;
     private int topViewSize;
     private DataVisual dataVisual;
     private LinkedList<PVector> previousBallLocation;
 
-    public TopView(Game p, DataVisual dataVisual, int topViewSize) {
+    public TopView(TangibleGame p, DataVisual dataVisual, int topViewSize) {
         parent = p;
         this.dataVisual = dataVisual;
         this.topViewSize = topViewSize;
-        surface = parent.createGraphics(topViewSize, topViewSize, Game.P2D);
+        surface = parent.createGraphics(topViewSize, topViewSize, TangibleGame.P2D);
         previousBallLocation = new LinkedList<>();
         previousBallLocation.add(parent.mover.ballLocation.get());
     }

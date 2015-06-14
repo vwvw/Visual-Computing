@@ -1,6 +1,5 @@
-package cs211.imageprocessing;
+package cs211.tangiblegame;
 
-import cs211.game.Game;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.video.Capture;
@@ -14,7 +13,6 @@ public class HoughTransform extends PApplet {
     public void setup() {
         //System.loadLibrary("D:/Programmes/Utility/processing-2.2.1-windows64/processing-2.2.1/modes/java/libraries/video/library/windows64");
         size(640, 480);
-        imP= new ImageProcessing(this);
         String[] cameras = Capture.list();
         if (cameras.length == 0) {
             println("There are no cameras available for capture.");

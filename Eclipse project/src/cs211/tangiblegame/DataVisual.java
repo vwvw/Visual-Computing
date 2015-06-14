@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import processing.core.PGraphics;
 
@@ -10,14 +10,14 @@ import processing.core.PGraphics;
 public class DataVisual {
     
     private PGraphics surface;
-    private Game parent;
+    private TangibleGame parent;
     private int size;
     
     
-    public DataVisual(Game p, int scoreBoardSize){
+    public DataVisual(TangibleGame p, int scoreBoardSize){
         parent = p;
         this.size = scoreBoardSize;
-        surface = parent.createGraphics(parent.windowSizeHeight, size, Game.P2D);
+        surface = parent.createGraphics(parent.windowSizeHeight, size, TangibleGame.P2D);
     }
     
     public int size(){

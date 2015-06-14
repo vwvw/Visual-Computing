@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import java.text.DecimalFormat;
 
@@ -6,14 +6,14 @@ import processing.core.PGraphics;
 
 public class ScoreView {
     
-    private Game parent;
+    private TangibleGame parent;
     private int height;
     private int width;
     private PGraphics surface;
     private int score;
     private int lastHitScore;
     
-    public ScoreView(Game p, int scoreViewHeight, int scoreViewWidth){
+    public ScoreView(TangibleGame p, int scoreViewHeight, int scoreViewWidth){
         parent = p;
         score = 0;
         lastHitScore = 0;

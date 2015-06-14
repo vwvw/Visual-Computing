@@ -1,4 +1,4 @@
-package cs211.imageprocessing;
+package cs211.tangiblegame;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import cs211.game.Game;
 import processing.core.*;
 import processing.video.*;
 
@@ -28,7 +27,7 @@ public class ImageProcessing implements Runnable {
 	private QuadGraph quadGraph;
 	List<PVector> bestLines;
 
-    private PApplet p;
+    private TangibleGame p;
     
     float rotX = 0;
     float rotZ = 0;
@@ -38,7 +37,7 @@ public class ImageProcessing implements Runnable {
 
 
 	
-	public ImageProcessing(PApplet parent){
+	public ImageProcessing(TangibleGame parent){
 	    p = parent;
 	}
 
@@ -103,9 +102,11 @@ public class ImageProcessing implements Runnable {
 	
 	public void getAngles(){
 	    
+	    m_image = p.cam.get();
 	    m_result = edgeDetection(m_image);
 	    List<PVector> allLines = hough(m_result, 6);
         List<int[]> quads = getQuads(allLines);
+        
         if(quads.isEmpty()){
             return;
         }
@@ -113,11 +114,11 @@ public class ImageProcessing implements Runnable {
         int[] bestQuad = getBestQuad(quads);
         //System.out.println(m_image.width + "   "+ m_image.height);
         bestLines = linesForQuad(bestQuad, allLines);
+        drawQuad(bestLines);
 	    TwoDThreeD td = new TwoDThreeD(m_image.width, m_image.height);
         PVector rot = td.get3DRotations(sortCorners(getIntersectionQuad(bestLines)));
-        rot.mult(180/PConstants.PI);
-        angles.x = (float) Math.toRadians(rot.x);
-        angles.y = (float) Math.toRadians(rot.y);
+        angles.x = rot.x;
+        angles.y = rot.y;
         
 	}
 
@@ -575,15 +576,15 @@ public class ImageProcessing implements Runnable {
 		// (intersection() is a simplified version of the
 		// intersections() method you wrote last week, that simply
 		// return the coordinates of the intersection between 2 lines)
-		PVector c12 = intersection(l1, l2);
-		PVector c23 = intersection(l2, l3);
-		PVector c34 = intersection(l3, l4);
-		PVector c41 = intersection(l4, l1);
+		PVector c12 = PVector.div(intersection(l1, l2),4 );
+		PVector c23 = PVector.div(intersection(l2, l3),4 );
+		PVector c34 = PVector.div(intersection(l3, l4),4 );
+		PVector c41 = PVector.div(intersection(l4, l1),4 );
 		// Choose a random, semi-transparent colour
 		Random random = new Random();
-		p.fill(p.color(PApplet.min(255, random.nextInt(300)),
-		        PApplet.min(255, random.nextInt(300)), PApplet.min(255, random.nextInt(300)),
-				50));
+		p.fill(p.color(222,
+		        58,69,
+				100));
 		p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
 	}
 

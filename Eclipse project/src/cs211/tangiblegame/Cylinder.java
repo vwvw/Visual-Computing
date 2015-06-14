@@ -1,12 +1,12 @@
-package cs211.game;
+package cs211.tangiblegame;
 import processing.core.*;
 
 public class Cylinder {
 
 	
-    private Game parent;
+    private TangibleGame parent;
 
-    Cylinder(Game p) {
+    Cylinder(TangibleGame p) {
         parent = p;
     }
 

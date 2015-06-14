@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import processing.core.PGraphics;
 import processing.core.PVector;
@@ -7,11 +7,11 @@ public class View3D {
     
     
     private PGraphics surface;
-    private Game parent;
+    private TangibleGame parent;
     
-    public View3D(Game p){
+    public View3D(TangibleGame p){
         parent = p;
-        surface = parent.createGraphics(parent.windowSizeHeight, parent.windowSizeHeight - parent.scoreBoardSize, Game.P3D);
+        surface = parent.createGraphics(parent.windowSizeHeight, parent.windowSizeHeight - parent.scoreBoardSize, TangibleGame.P3D);
     }
     
     public void draw(){
@@ -28,22 +28,22 @@ public class View3D {
             surface.box(parent.lBoard, parent.wBoard, parent.lBoard);
 
             surface.pushMatrix();
-            surface.rotateX(Game.PI / 2);
-            surface.rotateZ(-Game.PI / 2);
+            surface.rotateX(TangibleGame.PI / 2);
+            surface.rotateZ(-TangibleGame.PI / 2);
             // We draw a "preview Cylinder" of where the cylinder will be placed
             // once the player clicks, the cylinder isn't drawn if it can't be
             // placed where the mouse is being pointed at
             if (parent.cylinder.canPlaceCylinder()) {
-                PVector cyl = new PVector(Game.map(parent.mouseX, parent.minXBoundariesCylinder,
+                PVector cyl = new PVector(TangibleGame.map(parent.mouseX, parent.minXBoundariesCylinder,
                         parent.maxXBoundariesCylinder, parent.cylinderRadius, parent.lBoard
-                                - parent.cylinderRadius), Game.map(parent.mouseY,
+                                - parent.cylinderRadius), TangibleGame.map(parent.mouseY,
                                         parent.minYBoundariesCylinder, parent.maxYBoundariesCylinder,
                         parent.cylinderRadius, parent.lBoard - parent.cylinderRadius));
                 // surface.shape(cylinder.cylinderShaper(cyl.x-lBoard/2, cyl.y-lBoard/2));
                 surface.pushMatrix();
                 surface
                         .translate(cyl.x - parent.lBoard / 2, cyl.y - parent.lBoard / 2, 0);
-                surface.rotateX(Game.PI / 2);
+                surface.rotateX(TangibleGame.PI / 2);
                 surface.shape(parent.tree);
                 surface.popMatrix();
             }
@@ -53,7 +53,7 @@ public class View3D {
             	surface.pushMatrix();
             	
             	surface.translate(parent.arrayCylinderPosition.get(i).x - parent.lBoard / 2, parent.arrayCylinderPosition.get(i).y - parent.lBoard / 2);
-            	surface.rotateX(Game.PI/2);
+            	surface.rotateX(TangibleGame.PI/2);
             	
             	surface.shape(parent.tree);
             	surface.popMatrix();
@@ -63,7 +63,7 @@ public class View3D {
 
             // ball drwaing
             surface.pushMatrix();
-            surface.rotateY(Game.PI / 2);
+            surface.rotateY(TangibleGame.PI / 2);
             parent.mover.display();
             surface.popMatrix();
         } else { // not in shift mode
@@ -84,7 +84,7 @@ public class View3D {
                 //surface.shape(parent.arrayCylinderShape.get(i));
             	surface.pushMatrix();
                 surface.translate(parent.arrayCylinderPosition.get(i).x -parent.lBoard / 2, -parent.wBoard/2, parent.arrayCylinderPosition.get(i).y -parent.lBoard / 2);
-                surface.rotateX(Game.PI);
+                surface.rotateX(TangibleGame.PI);
                 surface.shape(parent.tree);
                 surface.popMatrix();
             }
@@ -93,6 +93,7 @@ public class View3D {
             // move and draw ball
             surface.pushMatrix();
             parent.mover.update();
+            surface.noStroke();
             parent.mover.display();
             surface.popMatrix();
         }

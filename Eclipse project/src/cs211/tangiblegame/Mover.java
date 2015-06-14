@@ -1,4 +1,4 @@
-package cs211.game;
+package cs211.tangiblegame;
 
 import processing.core.*;
 
@@ -11,9 +11,9 @@ public class Mover {
     float frictionMagnitude = normalForce * mu;
     float bounceCoefficient = 0.7f;
 
-    private Game parent;
+    private TangibleGame parent;
 
-    Mover(Game p) {
+    Mover(TangibleGame p) {
         parent = p;
         ballLocation = new PVector(0, -parent.wBoard / 2 - parent.ballRadius, 0);
         ballVelocity = new PVector(0, 0, 0);
