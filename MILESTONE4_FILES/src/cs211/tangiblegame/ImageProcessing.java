@@ -108,6 +108,9 @@ public class ImageProcessing implements Runnable {
         List<int[]> quads = getQuads(allLines);
         
         if(quads.isEmpty()){
+            if(!bestLines.isEmpty()){
+                drawQuad(bestLines);
+            }
             return;
         }
         
@@ -115,6 +118,7 @@ public class ImageProcessing implements Runnable {
         //System.out.println(m_image.width + "   "+ m_image.height);
         bestLines = linesForQuad(bestQuad, allLines);
         drawQuad(bestLines);
+
 	    TwoDThreeD td = new TwoDThreeD(m_image.width, m_image.height);
         PVector rot = td.get3DRotations(sortCorners(getIntersectionQuad(bestLines)));
         angles.x = rot.x;
@@ -581,10 +585,7 @@ public class ImageProcessing implements Runnable {
 		PVector c34 = PVector.div(intersection(l3, l4),4 );
 		PVector c41 = PVector.div(intersection(l4, l1),4 );
 		// Choose a random, semi-transparent colour
-		Random random = new Random();
-		p.fill(p.color(222,
-		        58,69,
-				100));
+		p.fill(p.color(222,58,69,100));
 		p.quad(c12.x, c12.y, c23.x, c23.y, c34.x, c34.y, c41.x, c41.y);
 	}
 
