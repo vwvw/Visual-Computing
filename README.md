@@ -8,3 +8,5 @@ Ou sur mac :
 
 -Dgstreamer.library.path=/Applications/Processing.app/Contents/Java/modes/java/libraries/video/library/macosx64
 -Dgstreamer.plugin.path=/Applications/Processing.app/Contents/Java/modes/java/libraries/video/library/macosx64/plugins
+
+If you have problem launching the game you can contact us at me@nicolasbadoux.com
