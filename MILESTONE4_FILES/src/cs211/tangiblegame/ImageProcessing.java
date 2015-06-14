@@ -49,6 +49,7 @@ public class ImageProcessing implements Runnable {
 	    m_image = img;
 	    m_result = edgeDetection(m_image);
 	       
+	    bestLines = new ArrayList<>();
 	    
 		// PICK WHICH IMAGE YOU WANT HERE !
 		//m_image = p.loadImage("../../board4.jpg");

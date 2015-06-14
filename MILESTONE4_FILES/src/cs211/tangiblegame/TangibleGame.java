@@ -146,7 +146,8 @@ public class TangibleGame extends PApplet {
            return;
        }
        if(firstTime && cam.available()){
-          imageProcessor.setup(cam.get());
+           PImage tmp = cam.get();
+          imageProcessor.setup(tmp);
           firstTime = false;
        }
        
