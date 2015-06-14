@@ -215,6 +215,9 @@ public class TangibleGame extends PApplet {
             rotZ = PI / 3;
         if (rotZ < -PI / 3)
             rotZ = -PI / 3;
+        
+        text("Press SHIFT to add obstacles !", 180,
+                10);
     }
 
     // we save the mouse position, and archive the rotation level
